@@ -1,13 +1,11 @@
 #%% [markdown]
-## University of Strathclyde
-## MSc Artificial Intelligence and Applications
-### Barry Smart
-### CS982 - Big Data Technologies
+## University of Strathclyde -  MSc Artificial Intelligence and Applications
+## CS982 - Big Data Technologies
 ### Lab 1
-# File Created - 2nd October 2019
+# File Created first created 2nd October 2019 by Barry Smart.
 # 
-### ABOUT:
-# This file walks through the examples set out in the Lab1.pdf
+#### ABOUT:
+# This file walks through the examples set out in the Lab1.pdf.
 
 #%%
 # 1. Write a Python program to get the Python version you are using and print it out
