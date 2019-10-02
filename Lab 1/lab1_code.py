@@ -1,13 +1,15 @@
-# University of Strathclyde
-# MSc Artificial Intelligence and Applications
-# Barry Smart
-# CS982 - Big Data Technologies
-# Lab 1
+#%% [markdown]
+## University of Strathclyde
+## MSc Artificial Intelligence and Applications
+### Barry Smart
+### CS982 - Big Data Technologies
+### Lab 1
 # File Created - 2nd October 2019
 # 
-# ABOUT:
+### ABOUT:
 # This file walks through the examples set out in the Lab1.pdf
 
+#%%
 # 1. Write a Python program to get the Python version you are using and print it out
 
 import platform
@@ -16,6 +18,7 @@ print(platform.sys.version)
 import sys
 print(sys.version_info)
 
+#%%
 # 2. Write a Python program to print the following as shown:
 
 string_to_print = \
@@ -30,6 +33,7 @@ Who lives down the lane."
 
 print(string_to_print)
 
+#%%
 # 3. Write a Python program to count the number of even and odd numbers from a series of numbers
 
 def count_odd_and_even_numbers_in_list(list_of_numbers):
@@ -48,6 +52,7 @@ def count_odd_and_even_numbers_in_list(list_of_numbers):
 even, odd = count_odd_and_even_numbers_in_list([1, 2, 3, 4, 12, 32, 27, 5, 6, 7, 8, 9])
 print("Even count:", even, ", odd count:", odd)
 
+#%%
 # 4. Write a Python program that prints all the numbers from 0 to 50 except 37 and 16.
 
 def capture_numbers_in_range_except(maximum, list_of_numbers_to_exclude):
@@ -59,6 +64,7 @@ def capture_numbers_in_range_except(maximum, list_of_numbers_to_exclude):
 
 capture_numbers_in_range_except(50, [37,16])
 
+#%%
 # 5. Write a Python program to get the Fibonacci series between 0 and 100. The Fibonacci Sequence is the series of numbers: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, ... The next number is found by adding up the two numbers before it.
 
 def create_finonacci(maximum):
