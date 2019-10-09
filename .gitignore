@@ -1,3 +1,6 @@
+# Ignoring raw data files for Assignment 1 as they are too large to store in GitHub
+assignment1/*.csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
