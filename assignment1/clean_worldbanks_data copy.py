@@ -40,7 +40,7 @@ analysis_of_2018 = interpolated_data_set.xs('2018', level=1).loc[:,["GDP (curren
 #%%
 analysis_of_2018["GDP per Capita"] = analysis_of_2018["GDP (current US$)"] / analysis_of_2018["Population, total"]
 #%%
-analysis_of_2018.plot.scatter(x="GDP per Capita", y="Life expectancy at birth, total (years)")
+analysis_of_2018.plot.scatter(x="GDP per Capita", y="Life expectancy at birth, total (years)", logx=True)
 
 
 #%%
