@@ -11,15 +11,21 @@
 # 1. Ingestion
 # 2. Trimming and Filtering
 # 3. Process Blank Cells
-# 4. Unpivoting and Pivoting
-# 5. Write To File
+# 4. Unpivoting
+# 5. Add Country Netadata
+# 6. Pivoting
+# 7. Write To File
 # 
 #### Design Decisions
 # - The notebook is structured such that it can be run end to end any time a new data cut becomes available to transform the raw data into a format for downstream analysis.
 # - Any heavy blocks of code have been written as functions in a seperate "data_wrangling_functions.py" Python file and imported into this notebook.
 #
-#### Stage 1 - Ingestion
-# First stage is to load the raw data from file.
+#### Stage 1 - Ingest Data
+# First stage is to load the raw data from CSV file as generated from the World Bank's [open data portal](https://databank.worldbank.org/home.aspx).
+# Two files are of interest:
+# - The larger file containing "world development indicators" organised by country and year.
+# - A smaller "coutry metadata" file containing classifications for each coutry such as region and income group.
+#
 
 #%%
 import numpy as np
@@ -27,12 +33,14 @@ import pandas as pd
 import assignment1.data_wrangling_functions as dwf
 
 #%%
-raw_worldbank_data = pd.read_csv("C:/Users/Barry/Documents/GitHub/CS982/assignment1/world_bank_data.csv.csv")
+raw_worldbank_data = pd.read_csv("C:/Users/Barry/Documents/GitHub/CS982/assignment1/world_bank_data.csv")
+#%%
+raw_worldbank_country_metadata = pd.read_csv("C:/Users/Barry/Documents/GitHub/CS982/assignment1/world_bank_country_metadata.csv")
 
 #%% [markdown]
 #### Stage 2 - Trimming and Filtering
 # This part of the process will:
-# - Remove the last 5 rows from the data set as they do not contain data;
+# - Trim the last 5 rows from the data set as they do not contain data (could be considered redundant given next step below);
 # - Filter down to the set of "Series Name" that I am interested in analysing.
 #
 #%%
@@ -57,7 +65,7 @@ filtered_worldbank_data["Series Name"].value_counts()
 cleansed_world_data = filtered_worldbank_data.replace(to_replace='..', value=np.nan)
 
 #%% [markdown]
-#### Stage 4 - Unpivoting and Pivoting
+#### Stage 4 - Unpivoting
 # This part of the process will:
 # - Rename the year columns - a pre-quisite to support the next step;
 # - Unpivot the data such that the individual year columns are collapsed into single column to achieve a "thin and tall" data structure;
@@ -73,25 +81,50 @@ reshaped_worldbank_data = pd.melt(reshaped_worldbank_data, id_vars=['Series Name
 reshaped_worldbank_data = reshaped_worldbank_data.rename(columns = { "variable" : "Year"})
 #%%
 reshaped_worldbank_data = reshaped_worldbank_data.astype({"value" : "float"})
-
 #%%
 reshaped_worldbank_data.shape
 #%%
 reshaped_worldbank_data.head(5)
+
+
+#%% [markdown]
+#### Stage 5 - Add Country Metadata
+#
 #%%
-reshaped_worldbank_data = pd.pivot_table(reshaped_worldbank_data, index=["Country Code", "Year"], columns="Series Name", values="value")
+raw_worldbank_country_metadata.columns
+#%%
+country_metadata = raw_worldbank_country_metadata[["Code", "Short Name", "Long Name", "Income Group", "Region"]]
+#%%
+country_metadata.head(10)
+#%%
+merged_data = reshaped_worldbank_data.merge(country_metadata, left_on="Country Code", right_on="Code")
+
+#%%
+merged_data.head(10)
+
+#%% [markdown]
+#### Stage 6 - Pivoting
+# This part of the process will:
+# - Pivot the data such that the individual series data are each placed into their own columns to achieve a "fatter and less tall" data stucture.
+#
+#%%
+pivoted_worldbank_data = pd.pivot_table(merged_data, index=["Region", "Income Group", "Country Code", "Year"], columns="Series Name", values="value")
 #%%
 #reshaped_worldbank_data = reshaped_worldbank_data.reset_index()
 #%%
-reshaped_worldbank_data.shape
+pivoted_worldbank_data.shape
 #%%
-reshaped_worldbank_data.describe()
+pivoted_worldbank_data.describe()
+#%%
+pivoted_worldbank_data.head(100)
+
 
 #%% [markdown]
-#### Stage 5 - Write To File
+#### Stage 7 - Write To File
 # Now we write the resulting data frame to the Pickle file format to preserve all meta data.
 
-reshaped_worldbank_data.to_pickle("./assignment1/reshaped_worldbank_data.pkl")
+#%%
+pivoted_worldbank_data.to_pickle("./assignment1/reshaped_worldbank_data.pkl")
 
 
 #%%
