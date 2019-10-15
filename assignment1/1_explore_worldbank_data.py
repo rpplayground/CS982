@@ -43,8 +43,19 @@
 # I am going to make use of the common numpy and pandas libraries to load, wrangle and perform basic analysis of the data
 import numpy as np
 import pandas as pd
+import assignment1.data_wrangling_functions as dwf
+
+#%%
 # Read the raw World Bank data from the CSV file
-raw_worldbank_data = pd.read_csv("C:/Users/Barry/Documents/GitHub/CS982/assignment1/world_bank_data.csv.csv")
+
+# github_path = "C:/Users/Barry/Documents"
+github_path = "C:/Users/cgb19156/"
+
+data_path = github_path + "GitHub/CS982/assignment1/"
+
+raw_worldbank_data = pd.read_csv(data_path + "world_bank_data.csv")
+# raw_worldbank_data = pd.read_csv("C:/Users/Barry/Documents/GitHub/CS982/assignment1/world_bank_data.csv")
+# C:\Users\cgb19156\github\CS982\assignment1\world_bank_data.csv
 # Have a look at the first 10 rows
 raw_worldbank_data.head(10)
 

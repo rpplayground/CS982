@@ -19,18 +19,45 @@ import pandas as pd
 import scipy
 
 #%%
-reshaped_worldbank_data = pd.read_pickle("./assignment1/reshaped_worldbank_data.pkl")
+# github_path = "C:/Users/Barry/Documents"
+github_path = "C:/Users/cgb19156/"
+
+data_path = github_path + "GitHub/CS982/assignment1/"
+
+pivoted_worldbank_data = pd.read_pickle(data_path + "pivoted_worldbank_data.pkl")
 
 #%%
-reshaped_worldbank_data.head(10)
+pivoted_worldbank_data.head(10)
 
 #%%
-interpolated_data_set = reshaped_worldbank_data.groupby(level=0).apply(lambda group: group.interpolate(method='linear', limit_direction='both', limit=60))
+interpolated_data_set = pivoted_worldbank_data.groupby(level=2).apply(lambda group: group.interpolate(method='linear', limit_direction='both', limit=60))
+
+#%%
+interpolated_data_set
+#%%
+# Using pd.IndexSlice to slice at "Country Code" level (ie level 2).
+pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ']], :]
+#%%
+# Now trim this to just select GDP data.
+pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ']], :].loc[:, ["GDP (current US$)"]]
+
+#%%
+# Now unstack it so we just get discrete columns for each of the countries
+pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ']], :].loc[:, ["GDP (current US$)"]].unstack(level=2)
+
+#%%
+# Now unstack it so we just get discrete columns for each of the countries
+pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ']], :].loc[:, ["GDP (current US$)"]].unstack(level=2).plot()
+
+#%%
+# Now unstack it so we just get discrete columns for each of the countries
+pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ']], :].loc[:, ["GDP (current US$)"]].unstack(level=2).plot()
+
 
 #%% 
-reshaped_worldbank_data.loc[['AFG', 'IRN', 'IRQ']].loc[:, ["GDP (current US$)"]].unstack(level=0).plot()
+pivoted_worldbank_data.loc[['AFG', 'IRN', 'IRQ']].loc[:, ["GDP (current US$)"]].unstack(level=2).plot()
 #%% 
-interpolated_data_set.loc[['AFG', 'IRN', 'IRQ']].loc[:, ["GDP (current US$)"]].unstack(level=0).plot()
+interpolated_data_set.loc[['AFG', 'IRN', 'IRQ']].loc[:, ["GDP (current US$)"]].unstack(level=2).plot()
 
 #%%
 analysis_of_2018 = interpolated_data_set.xs('2018', level=1).loc[:,["GDP (current US$)", "GNI, Atlas method (current US$)", "Life expectancy at birth, total (years)", "Population, total"]]

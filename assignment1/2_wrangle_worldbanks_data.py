@@ -33,9 +33,18 @@ import pandas as pd
 import assignment1.data_wrangling_functions as dwf
 
 #%%
-raw_worldbank_data = pd.read_csv("C:/Users/Barry/Documents/GitHub/CS982/assignment1/world_bank_data.csv")
+# Set up constants
+
+
 #%%
-raw_worldbank_country_metadata = pd.read_csv("C:/Users/Barry/Documents/GitHub/CS982/assignment1/world_bank_country_metadata.csv")
+# github_path = "C:/Users/Barry/Documents"
+github_path = "C:/Users/cgb19156/"
+
+data_path = github_path + "GitHub/CS982/assignment1/"
+
+raw_worldbank_data = pd.read_csv(data_path + "world_bank_data.csv")
+#%%
+raw_worldbank_country_metadata = pd.read_csv(data_path + "world_bank_country_metadata.csv")
 
 #%% [markdown]
 #### Stage 2 - Trimming and Filtering
@@ -124,7 +133,7 @@ pivoted_worldbank_data.head(100)
 # Now we write the resulting data frame to the Pickle file format to preserve all meta data.
 
 #%%
-pivoted_worldbank_data.to_pickle("./assignment1/reshaped_worldbank_data.pkl")
+pivoted_worldbank_data.to_pickle(data_path + "pivoted_worldbank_data.pkl")
 
 
 #%%
