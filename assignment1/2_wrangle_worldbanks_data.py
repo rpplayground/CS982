@@ -37,10 +37,7 @@ import assignment1.data_wrangling_functions as dwf
 
 
 #%%
-# github_path = "C:/Users/Barry/Documents"
-github_path = "C:/Users/cgb19156/"
-
-data_path = github_path + "GitHub/CS982/assignment1/"
+data_path = dwf.get_path_to_data_files
 
 raw_worldbank_data = pd.read_csv(data_path + "world_bank_data.csv")
 #%%
