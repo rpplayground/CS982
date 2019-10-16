@@ -37,7 +37,10 @@ import assignment1.data_wrangling_functions as dwf
 
 
 #%%
-data_path = dwf.get_path_to_data_files
+github_path = "C:/Users/Barry/"
+# github_path = "C:/Users/cgb19156/"
+
+data_path = github_path + "GitHub/CS982/assignment1/"
 
 raw_worldbank_data = pd.read_csv(data_path + "world_bank_data.csv")
 #%%
@@ -106,7 +109,13 @@ country_metadata.head(10)
 merged_data = reshaped_worldbank_data.merge(country_metadata, left_on="Country Code", right_on="Code")
 
 #%%
+merged_data = merged_data.astype({"Year" : "int"})
+
+#%%
 merged_data.head(10)
+
+#%%
+merged_data.dtypes
 
 #%% [markdown]
 #### Stage 6 - Pivoting
@@ -115,14 +124,17 @@ merged_data.head(10)
 #
 #%%
 pivoted_worldbank_data = pd.pivot_table(merged_data, index=["Region", "Income Group", "Country Code", "Year"], columns="Series Name", values="value")
-#%%
-#reshaped_worldbank_data = reshaped_worldbank_data.reset_index()
+
 #%%
 pivoted_worldbank_data.shape
 #%%
 pivoted_worldbank_data.describe()
 #%%
 pivoted_worldbank_data.head(100)
+
+#%%
+pivoted_worldbank_data.dtypes
+
 
 
 #%% [markdown]
@@ -132,5 +144,3 @@ pivoted_worldbank_data.head(100)
 #%%
 pivoted_worldbank_data.to_pickle(data_path + "pivoted_worldbank_data.pkl")
 
-
-#%%
