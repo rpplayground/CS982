@@ -37,8 +37,8 @@ import assignment1.data_wrangling_functions as dwf
 
 
 #%%
-github_path = "C:/Users/Barry/"
-# github_path = "C:/Users/cgb19156/"
+# github_path = "C:/Users/Barry/"
+github_path = "C:/Users/cgb19156/"
 
 data_path = github_path + "GitHub/CS982/assignment1/"
 

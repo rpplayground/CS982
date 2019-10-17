@@ -10,8 +10,6 @@
 #### Design Decisions
 # - Linear extrapolation
 #
-#### Stage 1 - Inspect Data
-# First stage is to load the raw data from file.
 
 #%%
 import numpy as np
@@ -20,9 +18,13 @@ import matplotlib as plt
 import seaborn as sns
 import scipy
 
+#%% [markdown]
+#### Stage 1 - Read The File
+# Read in the file that was generated from the previous script.
+
 #%%
-github_path = "C:/Users/Barry/"
-# github_path = "C:/Users/cgb19156/"
+#github_path = "C:/Users/Barry/"
+github_path = "C:/Users/cgb19156/"
 
 data_path = github_path + "GitHub/CS982/assignment1/"
 
@@ -31,14 +33,19 @@ pivoted_worldbank_data = pd.read_pickle(data_path + "pivoted_worldbank_data.pkl"
 #%%
 pivoted_worldbank_data.head(10)
 
+#%% [markdown]
+#### Stage 2 - Fill In The Missing Data
+# Fillin the blanks both backwards and forwards using linear interpolation.
+
 #%%
 interpolated_data_set = pivoted_worldbank_data.groupby(level=2).apply(lambda group: group.interpolate(method='linear', limit_direction='both', limit=60))
 
-#%%
-interpolated_data_set
+#%% [markdown]
+#### Stage 3 - Visualise The Results Of Filling In Missing Data
+# Generate some visualisations to show how the interpolation has worked.
 
 #%%
-# Using pd.IndexSlice to slice at "Country Code" level (ie level 2).
+# Using pd.IndexSlice to slice at "Country Code" level (ie level 2) for three interesting countries.
 pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ']], :]\
     .loc[:, ["GDP (current US$)"]].reset_index().groupby("Country Code").plot(x="Year")
 
@@ -47,16 +54,9 @@ pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ']], :]\
 interpolated_data_set.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ']], :]\
     .loc[:, ["GDP (current US$)"]].reset_index().groupby("Country Code").plot(x="Year")
 
+#%% [markdown]
+#### Stage 4 - Write To File
+# Now we write the resulting data frame to the Pickle file format to preserve all meta data.
 
 #%%
-analysis_of_2018 = interpolated_data_set.loc[pd.IndexSlice[:,:,:,[2018]], :].loc[:,["GDP (current US$)", "GNI, Atlas method (current US$)", "Life expectancy at birth, total (years)", "Population, total"]]
-
-#%%
-analysis_of_2018
-#%%
-analysis_of_2018["GDP per Capita"] = analysis_of_2018["GDP (current US$)"] / analysis_of_2018["Population, total"]
-#%%
-analysis_of_2018["GNI per Capita"] = analysis_of_2018["GNI, Atlas method (current US$)"] / analysis_of_2018["Population, total"]
-#%%
-analysis_of_2018.plot.scatter(x="GNI per Capita", y="Life expectancy at birth, total (years)", logx=False, alpha=0.5)
-
+interpolated_data_set.to_pickle(data_path + "interpolated_data_set.pkl")
