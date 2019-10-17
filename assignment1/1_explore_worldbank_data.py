@@ -78,7 +78,10 @@ raw_worldbank_data.shape
 # Look at more depth at the "Series Name" column to understand how many discrete data series are available:
 
 #%%
-raw_worldbank_data["Series Name"].value_counts()
+raw_worldbank_data["Series Name"].value_counts().head(20)
+
+#%%
+raw_worldbank_data["Series Name"].value_counts().count()
 
 #%%
 raw_worldbank_data.tail(10)
@@ -139,7 +142,7 @@ thin_slice = raw_worldbank_data.loc[raw_worldbank_data["Series Name"] == "GDP (c
 thin_slice.head(10)
 
 #%%
-thin_slice.iloc[1,4]
+thin_slice.iloc[1,2]
 
 #%%
 thin_slice.dtypes

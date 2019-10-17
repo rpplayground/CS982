@@ -61,9 +61,11 @@ trimmed_worldbank_data = raw_worldbank_data.head(-5)
 #%%
 trimmed_worldbank_data.tail(10)
 #%%
-list_of_series_names = ["Population, total", "GDP (current US$)", "GNI, Atlas method (current US$)", "Electric power consumption (kWh per capita)", \
-    "Energy use (kg of oil equivalent per capita)", "Personal remittances, paid (current US$)", "Start-up procedures to register a business (number)", \
-        "Life expectancy at birth, total (years)", "Inflation, consumer prices (annual %)", "Fertility rate, total (births per woman)", "Mobile cellular subscriptions (per 100 people)"]
+list_of_series_names = ["Population, total", "GDP (current US$)", "Electric power consumption (kWh per capita)", \
+    "Energy use (kg of oil equivalent per capita)", "Population density (people per sq. km of land area)", \
+        "Life expectancy at birth, total (years)", "Inflation, consumer prices (annual %)", \
+            "Exports of goods and services (current US$)", "Market capitalization of listed domestic companies (current US$)", \
+                "Mortality caused by road traffic injury (per 100,000 people)", "Tax revenue (% of GDP)"]
 
 filtered_worldbank_data = trimmed_worldbank_data.loc[trimmed_worldbank_data['Series Name'].isin(list_of_series_names)]
 #%%

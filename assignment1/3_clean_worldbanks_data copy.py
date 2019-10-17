@@ -36,15 +36,15 @@ pivoted_worldbank_data.head(10)
 #%%
 pivoted_worldbank_data.shape
 
-#%%
-pivoted_worldbank_data = pivoted_worldbank_data.dropna()
-
 #%% [markdown]
 #### Stage 2 - Fill In The Missing Data
 # Fillin the blanks both backwards and forwards using linear interpolation.
 
 #%%
 interpolated_data_set = pivoted_worldbank_data.groupby(level=2).apply(lambda group: group.interpolate(method='linear', limit_direction='both', limit=60))
+
+#%%
+#interpolated_data_set = interpolated_data_set.fillna(0)
 
 #%% [markdown]
 #### Stage 3 - Visualise The Results Of Filling In Missing Data
