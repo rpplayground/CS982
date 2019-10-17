@@ -45,6 +45,8 @@ data_path = github_path + "GitHub/CS982/assignment1/"
 raw_worldbank_data = pd.read_csv(data_path + "world_bank_data.csv")
 #%%
 raw_worldbank_country_metadata = pd.read_csv(data_path + "world_bank_country_metadata.csv")
+#%%
+raw_worldbank_country_metadata.loc[raw_worldbank_country_metadata["Code"] == "PRK"]
 
 #%% [markdown]
 #### Stage 2 - Trimming and Filtering

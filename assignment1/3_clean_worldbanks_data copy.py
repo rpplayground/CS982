@@ -33,6 +33,12 @@ pivoted_worldbank_data = pd.read_pickle(data_path + "pivoted_worldbank_data.pkl"
 #%%
 pivoted_worldbank_data.head(10)
 
+#%%
+pivoted_worldbank_data.shape
+
+#%%
+pivoted_worldbank_data = pivoted_worldbank_data.dropna()
+
 #%% [markdown]
 #### Stage 2 - Fill In The Missing Data
 # Fillin the blanks both backwards and forwards using linear interpolation.
@@ -46,12 +52,12 @@ interpolated_data_set = pivoted_worldbank_data.groupby(level=2).apply(lambda gro
 
 #%%
 # Using pd.IndexSlice to slice at "Country Code" level (ie level 2) for three interesting countries.
-pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ']], :]\
+pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ', 'PRK']], :]\
     .loc[:, ["GDP (current US$)"]].reset_index().groupby("Country Code").plot(x="Year")
 
 #%%
 # Now showing the same data for the interpolated data set!
-interpolated_data_set.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ']], :]\
+interpolated_data_set.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ', 'PRK']], :]\
     .loc[:, ["GDP (current US$)"]].reset_index().groupby("Country Code").plot(x="Year")
 
 #%% [markdown]
