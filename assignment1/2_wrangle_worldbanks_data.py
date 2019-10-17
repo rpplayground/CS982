@@ -33,12 +33,8 @@ import pandas as pd
 import assignment1.data_wrangling_functions as dwf
 
 #%%
-# Set up constants
-
-
-#%%
-# github_path = "C:/Users/Barry/"
-github_path = "C:/Users/cgb19156/"
+github_path = "C:/Users/Barry/"
+#github_path = "C:/Users/cgb19156/"
 
 data_path = github_path + "GitHub/CS982/assignment1/"
 
@@ -60,12 +56,39 @@ raw_worldbank_data.tail(10)
 trimmed_worldbank_data = raw_worldbank_data.head(-5)
 #%%
 trimmed_worldbank_data.tail(10)
+
+#%% [markdown]
+# So here the data components that are likely to have the biggest impact on the two areas need to be considered:
+####Life Expectency:
+# 1. Measures of economic properity:
+# 2. Access to energy;
+# 3. Environment measurements;
+# 4. Access to education and technology;
+
+
 #%%
-list_of_series_names = ["Population, total", "GDP (current US$)", "Electric power consumption (kWh per capita)", \
-    "Energy use (kg of oil equivalent per capita)", "Population density (people per sq. km of land area)", \
-        "Life expectancy at birth, total (years)", "Inflation, consumer prices (annual %)", \
-            "Exports of goods and services (current US$)", "Market capitalization of listed domestic companies (current US$)", \
-                "Mortality caused by road traffic injury (per 100,000 people)", "Tax revenue (% of GDP)"]
+list_of_series_names = ["Life expectancy at birth, total (years)",\
+    # Measures of economic prosperity
+    "GDP per capita (current US$)",\
+    "Inflation, consumer prices (annual %)",\
+    "Market capitalization of listed domestic companies (current US$)",\
+    "Tax revenue (% of GDP)",\
+    "Merchandise exports (current US$)",\
+    # Access to clean, reliable energy
+    "Electric power consumption (kWh per capita)",\
+    "Energy use (kg of oil equivalent per capita)",\
+    "Power outages in firms in a typical month (number)",\
+    # Environmental measures
+    "Population density (people per sq. km of land area)",\
+    "Urban population growth (annual %)",\
+    "Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (per 100,000 population)",\
+    "Mortality caused by road traffic injury (per 100,000 people)",\
+    "Mortality rate attributed to household and ambient air pollution, age-standardized (per 100,000 population)",\
+    "Urban population growth (annual %)",\
+    # Access to education, healthcare and technology
+    "Immunization, DPT (% of children ages 12-23 months)",\
+    "Mobile cellular subscriptions (per 100 people)",\
+    "Account ownership at a financial institution or with a mobile-money-service provider, young adults (% of population ages 15-24)"]
 
 filtered_worldbank_data = trimmed_worldbank_data.loc[trimmed_worldbank_data['Series Name'].isin(list_of_series_names)]
 #%%
@@ -113,7 +136,11 @@ country_metadata.head(10)
 merged_data = reshaped_worldbank_data.merge(country_metadata, left_on="Country Code", right_on="Code")
 
 #%%
+merged_data["Decade"] = merged_data["Year"].str.slice(start=0, stop=3) + "0s"
+
+#%%
 merged_data = merged_data.astype({"Year" : "int"})
+
 
 #%%
 merged_data.head(10)
@@ -127,7 +154,7 @@ merged_data.dtypes
 # - Pivot the data such that the individual series data are each placed into their own columns to achieve a "fatter and less tall" data stucture.
 #
 #%%
-pivoted_worldbank_data = pd.pivot_table(merged_data, index=["Region", "Income Group", "Country Code", "Year"], columns="Series Name", values="value")
+pivoted_worldbank_data = pd.pivot_table(merged_data, index=["Region", "Income Group", "Country Code", "Decade", "Year"], columns="Series Name", values="value")
 
 #%%
 pivoted_worldbank_data.shape

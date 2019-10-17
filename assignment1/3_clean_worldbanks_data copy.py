@@ -23,8 +23,8 @@ import scipy
 # Read in the file that was generated from the previous script.
 
 #%%
-#github_path = "C:/Users/Barry/"
-github_path = "C:/Users/cgb19156/"
+github_path = "C:/Users/Barry/"
+#github_path = "C:/Users/cgb19156/"
 
 data_path = github_path + "GitHub/CS982/assignment1/"
 
@@ -41,7 +41,7 @@ pivoted_worldbank_data.shape
 # Fillin the blanks both backwards and forwards using linear interpolation.
 
 #%%
-interpolated_data_set = pivoted_worldbank_data.groupby(level=2).apply(lambda group: group.interpolate(method='linear', limit_direction='both', limit=60))
+interpolated_data_set = pivoted_worldbank_data.groupby(level="Country Code").apply(lambda group: group.interpolate(method='linear', limit_direction='both', limit=60))
 
 #%%
 #interpolated_data_set = interpolated_data_set.fillna(0)
@@ -53,12 +53,22 @@ interpolated_data_set = pivoted_worldbank_data.groupby(level=2).apply(lambda gro
 #%%
 # Using pd.IndexSlice to slice at "Country Code" level (ie level 2) for three interesting countries.
 pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ', 'PRK']], :]\
-    .loc[:, ["GDP (current US$)"]].reset_index().groupby("Country Code").plot(x="Year")
+    .loc[:, ["GDP per capita (current US$)"]].reset_index().groupby("Country Code").plot(x="Year")
 
 #%%
 # Now showing the same data for the interpolated data set!
 interpolated_data_set.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ', 'PRK']], :]\
-    .loc[:, ["GDP (current US$)"]].reset_index().groupby("Country Code").plot(x="Year")
+    .loc[:, ["GDP per capita (current US$)"]].reset_index().groupby("Country Code").plot(x="Year")
+
+#%%
+# Using pd.IndexSlice to slice at "Country Code" level (ie level 2) for three interesting countries.
+pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ', 'PRK']], :]\
+    .loc[:, ["Electric power consumption (kWh per capita)"]].reset_index().groupby("Country Code").plot(x="Year")
+
+#%%
+# Now showing the same data for the interpolated data set!
+interpolated_data_set.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ', 'PRK']], :]\
+    .loc[:, ["Electric power consumption (kWh per capita)"]].reset_index().groupby("Country Code").plot(x="Year")
 
 #%% [markdown]
 #### Stage 4 - Write To File

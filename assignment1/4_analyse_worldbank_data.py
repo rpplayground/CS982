@@ -13,11 +13,14 @@
 #- Trying to understand the factors that drive population growth.
 #- Using the above to project world population forward based on some economic assumptions to estimate what the maximum populaton will reach.
 #
+#### Chart Styles to Try
+# - Annotated Heatmap
+# 
 #%%
 import numpy as np
 import pandas as pd
-import matplotlib as plt
 import seaborn as sns
+import matplotlib.pyplot as plt
 import scipy
 
 #%% [markdown]
@@ -25,8 +28,8 @@ import scipy
 # Read in the file that was generated from the previous script.
 
 #%%
-#github_path = "C:/Users/Barry/"
-github_path = "C:/Users/cgb19156/"
+github_path = "C:/Users/Barry/"
+#github_path = "C:/Users/cgb19156/"
 
 data_path = github_path + "GitHub/CS982/assignment1/"
 
@@ -37,28 +40,26 @@ interpolated_data_set.head(10)
 
 #%%
 interpolated_data_set.columns
+
+# Useful link for slicing multi indexes:
+# [https://pandas.pydata.org/pandas-docs/stable/user_guide/advanced.html#advanced](https://pandas.pydata.org/pandas-docs/stable/user_guide/advanced.html#advanced)
+#
+# df.loc[(slice('A1', 'A3'), ...), :]
 #%%
-analysis_of_2018 = interpolated_data_set.loc[pd.IndexSlice[:,:,:,[2018]], :]\
-    .loc[:,["GDP (current US$)", "Life expectancy at birth, total (years)",\
-         "Population, total", "Energy use (kg of oil equivalent per capita)"]]
+analysis_of_2018 = interpolated_data_set.xs(2018, level="Year", drop_level=False)
 
 #%%
 analysis_of_2018
-#%%
-analysis_of_2018["GDP per Capita"] = \
-    analysis_of_2018["GDP (current US$)"] / analysis_of_2018["Population, total"]
 
 #%%
-analysis_of_2018.reset_index().plot.scatter(x="GDP per Capita", y="Life expectancy at birth, total (years)", logx=False, alpha=0.5)
+analysis_of_2018["Log GDP per Capita"] = np.log(analysis_of_2018["GDP per capita (current US$)"])
+
 
 #%%
-analysis_of_2018.reset_index().plot.scatter(x="GDP per Capita", y="Life expectancy at birth, total (years)", logx=True, alpha=0.5)
+analysis_of_2018_flattened = analysis_of_2018.reset_index()
 
 #%%
-analysis_of_2018["Log GDP per Capita"] = np.log(analysis_of_2018["GDP per Capita"])
-
-#%%
-flattened_dataframe = analysis_of_2018.reset_index().loc[:,["GDP per Capita", "Life expectancy at birth, total (years)", "Population, total", "Region", "Log GDP per Capita", "Income Group", "Energy use (kg of oil equivalent per capita)"]]
+analysis_of_2018_flattened
 
 #%%
 #flattened_dataframe["Region Category"] = flattened_dataframe["Region"].astype('category')
@@ -66,18 +67,127 @@ flattened_dataframe = analysis_of_2018.reset_index().loc[:,["GDP per Capita", "L
 #%%
 #flattened_dataframe["Region Code"] = flattened_dataframe["Region Category"].cat.codes
 #%%
-flattened_dataframe.dtypes
+analysis_of_2018_flattened.dtypes
 #%%
-flattened_dataframe.describe()
+analysis_of_2018_flattened.describe()
+#%%
+sns.boxplot(x="Life expectancy at birth, total (years)", y="Region", data=analysis_of_2018_flattened)
+
+#%%
+sns.boxplot(x="GDP per capita (current US$)", y="Region", data=analysis_of_2018_flattened)
+
+#%%
+analysis_of_2018_flattened["Log GDP per Capita"] = np.log(analysis_of_2018_flattened["GDP per capita (current US$)"])
+
+#%%
+sns.boxplot(x="Log GDP per Capita", y="Region", data=analysis_of_2018_flattened)
+
+#%%
+#sns.pairplot(analysis_of_2018_flattened, hue="Region")
+
 #%%
 sns.set(style="ticks")
-sns.pairplot(flattened_dataframe, hue="Region")
+f, ax = plt.subplots(figsize=(10, 10))
+region_ranking = ["North America", "Europe & Central Asia", "Middle East & North Africa", "Latin America & Caribbean", "East Asia & Pacific", "South Asia", "Sub-Saharan Africa"]
+sns.scatterplot(x="Log GDP per Capita", y="Life expectancy at birth, total (years)",\
+    hue="Region",\
+    #size="depth",\
+    #palette="ch:r=-.2,d=.3_r",\
+    hue_order=region_ranking,\
+    sizes=(1, 8), linewidth=0,\
+    data=analysis_of_2018_flattened, ax=ax)
 
 #%%
-sns.boxplot(x="Life expectancy at birth, total (years)", y="Region", data=flattened_dataframe)
+analysis_of_2018_flattened["Region"].value_counts()
 
 #%%
-sns.boxplot(x="Log GDP per Capita", y="Region", data=flattened_dataframe)
+# Compute the correlation matrix
+correlation_matrix = analysis_of_2018.corr()
 
 #%%
-sns.boxplot(x="Life expectancy at birth, total (years)", y="Income Group", data=flattened_dataframe)
+# Generate a mask for the upper triangle
+mask = np.zeros_like(corr, dtype=np.bool)
+mask[np.triu_indices_from(mask)] = True
+
+sns.set(style="ticks")
+
+# Set up the matplotlib figure
+f, ax = plt.subplots(figsize=(11, 9))
+
+# Generate a custom diverging colormap
+cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+# Draw the heatmap with the mask and correct aspect ratio
+sns.heatmap(corr, mask=mask,\
+    cmap=cmap,\
+    vmax=.3, center=0,\
+    square=True, linewidths=.5, cbar_kws={"shrink": .5})
+
+#%%
+mean_by_region = analysis_of_2018.groupby(level="Region").mean()
+
+#%%
+sns.set(style="ticks")
+f, ax = plt.subplots(figsize=(10, 10))
+region_ranking = ["North America", "Europe & Central Asia", "Middle East & North Africa", "Latin America & Caribbean", "East Asia & Pacific", "South Asia", "Sub-Saharan Africa"]
+sns.scatterplot(x="Log GDP per Capita", y="Life expectancy at birth, total (years)",\
+    hue="Region",\
+    #size="depth",\
+    #palette="ch:r=-.2,d=.3_r",\
+    hue_order=region_ranking,\
+    sizes=(1, 8), linewidth=0,\
+    data=mean_by_region.reset_index(), ax=ax)
+
+
+#%%
+mean_by_region_and_decade = interpolated_data_set.groupby(level=["Region", "Decade"]).mean()
+
+#%%
+mean_by_region_and_decade
+
+#%%
+sns.set(style="ticks")
+f, ax = plt.subplots(figsize=(10, 10))
+region_ranking = ["North America", "Europe & Central Asia", "Middle East & North Africa", "Latin America & Caribbean", "East Asia & Pacific", "South Asia", "Sub-Saharan Africa"]
+sns.lineplot(x="Decade", y="Life expectancy at birth, total (years)",\
+    hue="Region",\
+    #size="depth",\
+    #palette="ch:r=-.2,d=.3_r",\
+    hue_order=region_ranking,\
+    sizes=(1, 8), linewidth=3,\
+    data=mean_by_region_and_decade.reset_index(), ax=ax)
+
+#%%
+mean_by_region_and_year = interpolated_data_set.groupby(level=["Region", "Year"]).mean()
+
+#%%
+mean_by_region_and_year
+
+#%%
+sns.set(style="ticks")
+f, ax = plt.subplots(figsize=(10, 10))
+region_ranking = ["North America", "Europe & Central Asia", "Middle East & North Africa", "Latin America & Caribbean", "East Asia & Pacific", "South Asia", "Sub-Saharan Africa"]
+sns.lineplot(x="Year", y="Life expectancy at birth, total (years)",\
+    hue="Region",\
+    #size="depth",\
+    #palette="ch:r=-.2,d=.3_r",\
+    hue_order=region_ranking,\
+    sizes=(1, 8), linewidth=3,\
+    data=mean_by_region_and_year.reset_index(), ax=ax)
+
+#%%
+sns.set(style="ticks")
+f, ax = plt.subplots(figsize=(10, 10))
+region_ranking = ["North America", "Europe & Central Asia", "Middle East & North Africa", "Latin America & Caribbean", "East Asia & Pacific", "South Asia", "Sub-Saharan Africa"]
+sns.lineplot(x="Year", y="GDP per capita (current US$)",\
+    hue="Region",\
+    #size="depth",\
+    #palette="ch:r=-.2,d=.3_r",\
+    hue_order=region_ranking,\
+    sizes=(1, 8), linewidth=3,\
+    data=mean_by_region_and_year.reset_index(), ax=ax)
+
+
+
+
+#%%
