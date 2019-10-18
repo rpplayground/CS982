@@ -151,6 +151,7 @@ reshaped_worldbank_data.head(5)
 raw_worldbank_country_metadata.columns
 #%%
 country_metadata = raw_worldbank_country_metadata[["Code", "Short Name", "Long Name", "Income Group", "Region"]]
+
 #%%
 country_metadata.head(10)
 #%%
@@ -159,6 +160,10 @@ merged_data = reshaped_worldbank_data.merge(country_metadata, left_on="Country C
 merged_data["Decade"] = merged_data["Year"].str.slice(start=0, stop=3) + "0s"
 #%%
 merged_data = merged_data.astype({"Year" : "int"})
+
+#%%
+merged_data = merged_data.rename(columns = { "Short Name" : "Country"})
+
 #%%
 merged_data.head(10)
 #%%
@@ -170,7 +175,7 @@ merged_data.dtypes
 # - Pivot the data such that the individual series data are each placed into their own columns to achieve a "fatter and less tall" data stucture.
 #
 #%%
-pivoted_worldbank_data = pd.pivot_table(merged_data, index=["Region", "Income Group", "Country Code", "Decade", "Year"], columns="Series Name", values="value")
+pivoted_worldbank_data = pd.pivot_table(merged_data, index=["Region", "Income Group", "Country", "Decade", "Year"], columns="Series Name", values="value")
 #%%
 pivoted_worldbank_data.shape
 #%%

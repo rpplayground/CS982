@@ -4,7 +4,7 @@
 ## Assignment 1 - Exploring Data
 # File Created first created 9th October 2019 by Barry Smart.
 # 
-### Part 6 - Clean Up Data
+### Stage 6 - Clean Up Data
 # The purpose of this notebook is to do some basic cleaning of the data.
 #
 #### Design Decisions
@@ -19,7 +19,7 @@ import seaborn as sns
 import scipy
 
 #%% [markdown]
-#### Stage 1 - Read The File
+#### Stage 6.1 - Read The File
 # Read in the file that was generated from the previous script.
 
 #%%
@@ -31,42 +31,48 @@ pivoted_worldbank_data = pd.read_pickle(data_path + "pivoted_worldbank_data.pkl"
 #%%
 pivoted_worldbank_data.shape
 
+#%%
+pivoted_worldbank_data
+
 #%% [markdown]
-#### Stage 2 - Fill In The Missing Data
-# Fillin the blanks both backwards and forwards using linear interpolation.
+#### Stage 6.2 - Fill In The Missing Data
+# Fillin the blanks *only forwards* using linear interpolation.
 
 #%%
-interpolated_data_set = pivoted_worldbank_data.groupby(level="Country Code").apply(lambda group: group.interpolate(method='linear', limit_direction='forward', limit=60))
+interpolated_data_set = pivoted_worldbank_data.groupby(level="Country").apply(lambda group: group.interpolate(method='linear', limit_direction='forward', limit=60))
+
+#%%
+interpolated_data_set
 
 #%%
 #interpolated_data_set = interpolated_data_set.fillna(0)
 
 #%% [markdown]
-#### Stage 3 - Visualise The Results Of Filling In Missing Data
+#### Stage 6.3 - Visualise The Results Of Filling In Missing Data
 # Generate some visualisations to show how the interpolation has worked.
 
 #%%
-# Using pd.IndexSlice to slice at "Country Code" level (ie level 2) for three interesting countries.
-pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ', 'PRK']], :]\
-    .loc[:, ["GDP per capita (current US$)"]].reset_index().groupby("Country Code").plot(x="Year")
+# Using pd.IndexSlice to slice at "Country" level (ie level 2) for three interesting countries.
+pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['Afghanistan', 'Iran', 'Iraq', 'Dem. People\'s Rep. Korea']], :]\
+    .loc[:, ["GDP per capita (current US$)"]].reset_index().groupby("Country").plot(x="Year")
 
 #%%
 # Now showing the same data for the interpolated data set!
-interpolated_data_set.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ', 'PRK']], :]\
-    .loc[:, ["GDP per capita (current US$)"]].reset_index().groupby("Country Code").plot(x="Year")
+interpolated_data_set.loc[pd.IndexSlice[:,:,['Afghanistan', 'Iran', 'Iraq', 'Dem. People\'s Rep. Korea']], :]\
+    .loc[:, ["GDP per capita (current US$)"]].reset_index().groupby("Country").plot(x="Year")
 
 #%%
-# Using pd.IndexSlice to slice at "Country Code" level (ie level 2) for three interesting countries.
-pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ', 'PRK']], :]\
-    .loc[:, ["Electric power consumption (kWh per capita)"]].reset_index().groupby("Country Code").plot(x="Year")
+# Using pd.IndexSlice to slice at "Country" level (ie level 2) for three interesting countries.
+pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['Afghanistan', 'Iran', 'Iraq', 'Dem. People\'s Rep. Korea']], :]\
+    .loc[:, ["Electric power consumption (kWh per capita)"]].reset_index().groupby("Country").plot(x="Year")
 
 #%%
 # Now showing the same data for the interpolated data set!
-interpolated_data_set.loc[pd.IndexSlice[:,:,['AFG', 'IRN', 'IRQ', 'PRK']], :]\
-    .loc[:, ["Electric power consumption (kWh per capita)"]].reset_index().groupby("Country Code").plot(x="Year")
+interpolated_data_set.loc[pd.IndexSlice[:,:,['Afghanistan', 'Iran', 'Iraq', 'Dem. People\'s Rep. Korea']], :]\
+    .loc[:, ["Electric power consumption (kWh per capita)"]].reset_index().groupby("Country").plot(x="Year")
 
 #%% [markdown]
-#### Stage 4 - Write To File
+#### Stage 6.4 - Write To File
 # Now we write the resulting data frame to the Pickle file format to preserve all meta data.
 
 #%%
