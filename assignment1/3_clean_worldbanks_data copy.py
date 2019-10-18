@@ -25,13 +25,8 @@ import scipy
 #%%
 github_path = "C:/Users/Barry/"
 #github_path = "C:/Users/cgb19156/"
-
 data_path = github_path + "GitHub/CS982/assignment1/"
-
 pivoted_worldbank_data = pd.read_pickle(data_path + "pivoted_worldbank_data.pkl")
-
-#%%
-pivoted_worldbank_data.head(10)
 
 #%%
 pivoted_worldbank_data.shape
@@ -41,7 +36,7 @@ pivoted_worldbank_data.shape
 # Fillin the blanks both backwards and forwards using linear interpolation.
 
 #%%
-interpolated_data_set = pivoted_worldbank_data.groupby(level="Country Code").apply(lambda group: group.interpolate(method='linear', limit_direction='both', limit=60))
+interpolated_data_set = pivoted_worldbank_data.groupby(level="Country Code").apply(lambda group: group.interpolate(method='linear', limit_direction='forward', limit=60))
 
 #%%
 #interpolated_data_set = interpolated_data_set.fillna(0)
