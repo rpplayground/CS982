@@ -100,6 +100,25 @@ box_plot = sns.boxplot(x="Life expectancy at birth, total (years)",\
 # There is a significant outlier for "Latin America & Caribbean" - it would be good to investigate this further.
 # TODO - add a backlog item.
 #
+
+#%%
+analysis_of_2018_flattened.loc[:,["Country", "Region", "Life expectancy at birth, total (years)"]]\
+    .loc[analysis_of_2018_flattened["Region"] == "Latin America & Caribbean"]\
+    .nsmallest(10, "Life expectancy at birth, total (years)")
+
+#%%
+haiti_data = interpolated_data_set.reset_index()
+haiti_data = haiti_data.loc[haiti_data["Country"] == "Lithuania"]
+sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '--'})
+f, ax = plt.subplots(figsize=(10, 10))
+# ax.set(yscale="log")
+#ax.set_ylim(-5, 10)
+plt.title("YYY", fontdict = {"fontsize" : 20})
+sns.lineplot(x="Year", y="Population, total",\
+    color="gray", data=haiti_data, ax=ax)
+
+
+#%% [mardown]
 #### Development of Life Expectancy Over Time
 #Lets now examine how the gap in life expectancy across different nations has developed over time.
 #
@@ -245,8 +264,14 @@ analysis_of_2018_flattened.loc[:,["Country", "Region", "Population, total", "Pop
 #%%
 analysis_of_2018_flattened.loc[:,["Country", "Region", "Population, total", "Population growth (annual %)"]]\
     .nlargest(10, "Population growth (annual %)")
+
 #%% [markdown]
-#### Population 2018 - Bottom 10 Countries
+#### Population Growth 2018 - Bottom 10 Countries
+
+#%%
+analysis_of_2018_flattened.loc[:,["Country", "Region", "Population, total", "Population growth (annual %)"]]\
+    .nsmallest(10, "Population growth (annual %)")
+
 #%%
 analysis_of_2018_flattened.loc[analysis_of_2018_flattened["Population growth (annual %)"] < 0]["Country"].count()
 
