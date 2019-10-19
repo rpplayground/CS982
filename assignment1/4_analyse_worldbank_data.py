@@ -19,6 +19,14 @@ import matplotlib.pyplot as plt
 import scipy
 import assignment1.data_wrangling_functions as dwf
 
+#%%
+region_ranking = ["North America", "Europe & Central Asia", "Middle East & North Africa",\
+    "Latin America & Caribbean", "East Asia & Pacific", "South Asia", "Sub-Saharan Africa"]
+region_palette = {"North America" : "red", "Europe & Central Asia" : "blue",\
+    "Middle East & North Africa" : "pink", "Latin America & Caribbean" : "purple",\
+        "East Asia & Pacific" : "green", "South Asia" : "orange", "Sub-Saharan Africa" : "gray"}
+
+
 #%% [markdown]
 ### Stage 7.1 - Read The File
 # Read in the file that was generated from the previous script.
@@ -69,6 +77,7 @@ analysis_of_2018_flattened.loc[:,["Country", "Region", "Life expectancy at birth
     .nlargest(10, "Life expectancy at birth, total (years)")
 #%% [markdown]
 #### Life Expectancy 2018 - Bottom 10 Countries
+
 #%%
 analysis_of_2018_flattened.loc[:,["Country", "Region", "Life expectancy at birth, total (years)"]]\
     .nsmallest(10, "Life expectancy at birth, total (years)")
@@ -85,15 +94,15 @@ analysis_of_2018_flattened.loc[:,["Country", "Region", "Life expectancy at birth
 #Now using box plots to look at distribution by country.
 
 #%%
-region_ranking = ["North America", "Europe & Central Asia", "Middle East & North Africa", "Latin America & Caribbean", "East Asia & Pacific", "South Asia", "Sub-Saharan Africa"]
+def region_box_plot(data_frame, x_column, plot_title, x_scale="linear"):
+    sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
+    f, ax = plt.subplots(figsize=(10, 10))
+    ax.set(xscale=x_scale)
+    plt.title(plot_title, fontdict = {"fontsize" : 20})
+    box_plot = sns.boxplot(x=x_column, y="Region", order=region_ranking, data=analysis_of_2018_flattened, palette=region_palette, ax=ax)
 
-sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
-f, ax = plt.subplots(figsize=(10, 10))
-plt.title("Distribution of Life Expectancy\nby Region in 2018", fontdict = {"fontsize" : 20})
-box_plot = sns.boxplot(x="Life expectancy at birth, total (years)",\
-    y="Region", order=region_ranking, data=analysis_of_2018_flattened, ax=ax)
-
-
+#%%
+region_box_plot(analysis_of_2018_flattened, "Life expectancy at birth, total (years)", "Distribution of Life Expectancy\nby Region in 2018")
 
 #%% [markdown]
 #### Notes
@@ -132,24 +141,32 @@ mean_by_region_and_year = interpolated_data_set.groupby(level=["Region", "Year"]
 mean_by_region_and_year
 
 #%%
-sns.set(style="ticks")
-f, ax = plt.subplots(figsize=(10, 10))
-plt.title("Development of Life Expectancy by Region\nby Year since 1960", fontdict = {"fontsize" : 20})
-sns.lineplot(x="Year", y="Life expectancy at birth, total (years)",\
-    hue="Region",\
-    #size="depth",\
-    #palette="ch:r=-.2,d=.3_r",\
-    hue_order=region_ranking,\
-    sizes=(1, 8), linewidth=3,\
-    data=mean_by_region_and_year.reset_index(), ax=ax)
+def region_line_plot(data_frame, y_column, plot_title, y_scale="linear"):
+    sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
+    f, ax = plt.subplots(figsize=(10, 10))
+    ax.set(yscale=y_scale)
+    plt.title(plot_title, fontdict = {"fontsize" : 20})
+    sns.lineplot(x="Year", y=y_column,\
+        hue="Region",\
+        hue_order=region_ranking,\
+        linewidth=3,\
+        palette=region_palette,\
+        data=data_frame, ax=ax)
+
+#%%
+region_line_plot(mean_by_region_and_year.reset_index(), "Life expectancy at birth, total (years)", "Development of Life Expectancy by Region\nby Year since 1960", y_scale="linear")
+
+#%%
+mean_by_country_and_decade = interpolated_data_set.groupby(level=["Region", "Country", "Decade"]).mean().reset_index()
+mean_by_country_and_decade
+
 
 #%%
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
 f, ax = plt.subplots(figsize=(10, 10))
-plt.title("YYY", fontdict = {"fontsize" : 20})
-box_plot = sns.boxplot(x="Decade", color="gray",\
-    y="Life expectancy at birth, total (years)", orient="v", data=interpolated_data_set.reset_index(), ax=ax)
-
+plt.title("Development of Life Expectancy by Country\nby Decade since 1960", fontdict = {"fontsize" : 20})
+sns.swarmplot(x="Decade", y="Life expectancy at birth, total (years)", hue="Region",\
+    palette=region_palette, data=mean_by_country_and_decade)
 
 #%% [markdown]
 #### Conclusions - Development of Life Expectancy Over Time
