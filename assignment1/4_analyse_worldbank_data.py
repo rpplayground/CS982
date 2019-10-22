@@ -96,11 +96,16 @@ analysis_of_2018_flattened.loc[:,["Country", "Region", "Life expectancy at birth
 #%%
 # Create a helper function for box plots of different columns by region.
 def region_box_plot(data_frame, x_column, plot_title, x_scale="linear"):
-    sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
-    f, ax = plt.subplots(figsize=(10, 5))
+    sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-',\
+        'axes.titlesize' : 24, 'axes.labelsize' : 16, 'xtick.labelsize' : 12, 'ytick.labelsize' : 12})
+    f, ax = plt.subplots(figsize=(8, 5))
     ax.set(xscale=x_scale)
-    plt.title(plot_title, fontdict = {"fontsize" : 20})
+    #plt.title(plot_title)
     box_plot = sns.boxplot(x=x_column, y="Region", order=region_ranking, data=analysis_of_2018_flattened, palette=region_palette, ax=ax)
+    #box_plot.axes.set_title(plot_title,fontsize=18)
+    box_plot.set_xlabel(x_column,fontsize=14)
+    box_plot.set_ylabel("Region",fontsize=14)
+    box_plot.tick_params(labelsize=12)
 
 #%%
 region_box_plot(analysis_of_2018_flattened, "Life expectancy at birth, total (years)", "Distribution of Life Expectancy\nby Region in 2018")
@@ -140,7 +145,7 @@ sns.lineplot(x="Year", y="Population, total",\
 
 #%%
 def region_line_plot(data_frame, y_column, plot_title, y_scale="linear"):
-    sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
+    sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-', })
     f, ax = plt.subplots(figsize=(10, 10))
     ax.set(yscale=y_scale)
     plt.title(plot_title, fontdict = {"fontsize" : 20})
@@ -218,7 +223,8 @@ region_box_plot(analysis_of_2018_flattened, "GDP per capita (current US$)", "Dis
 #Lets now examine how the gap in GDP across different nations has developed over time.
 #
 #%%
-region_line_plot(mean_by_region_and_year, "GDP per capita (current US$)", "Development of GDP Per Capita by Region\nby Year Since 1960", y_scale="log")
+region_line_plot(mean_by_region_and_year, "GDP per capita (current US$)",\
+    "Development of GDP Per Capita by Region\nby Year Since 1960", y_scale="linear")
 
 #%%
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
