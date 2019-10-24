@@ -48,8 +48,8 @@ dataset.shape
 # If they are equal, it is balanced.
 # Segment the outcome (first column) and remaining data (attributes) so we can use the attributes for clustering.
 #%%
-dataset_outcome = dataset.loc[:,"class"]
-dataset_outcome.head(10)
+ground_truth = dataset.loc[:,"class"]
+ground_truth.head(10)
 
 #%%
 dataset_variables = dataset.loc[:, ["left_weight", "left_distance", "right_weight", "right_distance"]]
@@ -61,31 +61,31 @@ dataset_variables.describe()
 #%% [markdown]
 # 4. Scale the data that we are going to use for clustering
 #%%
-dataset_variables_scaled = pd.DataFrame(scale(dataset_variables))
+X = pd.DataFrame(scale(dataset_variables))
 
 #%%
-dataset_variables_scaled.head(10)
+X.head(10)
 
 #%%
-dataset_variables_scaled.describe()
+X.describe()
 
 #%% [markdown]
 # 5. We know that there are 3 possible categories for the data. Create 3 data clusters using #Agglomerative Hierarchical Clustering.
 # What are the silhouette score, homogeneity and #completeness for these clusters?
 # (Helping hand, if you need to convert labels from strings to #something else look at sklearn.preprocessing.LabelEncoder())
 #%%
-n_samples, n_features = dataset_variables_scaled.shape
+n_samples, n_features = X.shape
 print("n_samples: " + str(n_samples) + " - n_features: " + str(n_features))
 
 #%%
-n_digits = len(np.unique(dataset_outcome))
+n_digits = len(np.unique(ground_truth))
 n_digits
 
 #%%
 model = cluster.AgglomerativeClustering(n_clusters=n_digits, linkage='average', affinity='cosine')
 
 #%%
-model.fit(dataset_variables_scaled)
+model.fit(X)
 
 
 #%% [markdown]
@@ -94,8 +94,8 @@ model.fit(dataset_variables_scaled)
 # What is the best combination?
 #%%
 # To evaluate the performance of the model, we need to encode the L, B, R classification as integers..
-dataset_outcome_encoded = LabelEncoder().fit_transform(dataset_outcome)
-dataset_outcome_encoded
+Y = LabelEncoder().fit_transform(ground_truth)
+Y
 
 #%%
 # Let's look at the labels that the model has assigned
@@ -117,7 +117,7 @@ model.labels_
 # - The score is higher when clusters are dense and well separated, which relates to a standard concept of a cluster.
 
 #%%
-metrics.silhouette_score(dataset_variables_scaled, model.labels_)
+metrics.silhouette_score(X, model.labels_)
 
 #%% [markdown]
 ### Completeness Score
@@ -125,7 +125,7 @@ metrics.silhouette_score(dataset_variables_scaled, model.labels_)
 # A clustering result satisfies completeness if all the data points that are members of a given class are elements of the same cluster.
 
 #%%
-metrics.completeness_score(dataset_outcome_encoded, model.labels_)
+metrics.completeness_score(Y, model.labels_)
 
 #%% [markdown]
 ### Homogeneity Score
@@ -133,7 +133,7 @@ metrics.completeness_score(dataset_outcome_encoded, model.labels_)
 #A clustering result satisfies homogeneity if all of its clusters contain only data points which are members of a single class.
 
 #%%
-metrics.homogeneity_score(dataset_outcome_encoded, model.labels_)
+metrics.homogeneity_score(Y, model.labels_)
 
 #%% [markdown]
 # 7. What are the silhouette score, homogeneity and completeness for different numbers of clusters created using KMeans?

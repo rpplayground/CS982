@@ -4,7 +4,7 @@
 ## Assignment 1 - Exploring Data
 # File Created first created 9th October 2019 by Barry Smart.
 # 
-### Stage 5 - Wrangle Data
+### Stage 1 - Wrangle Data
 # The purpose of this notebook is to orchestrate the process of wanrgling the data.
 # This has been tackled by completing each of the backlog items classed as "Data Wrangling" and placing them into a logica sequence in the notebook:
 # 
@@ -21,7 +21,7 @@
 # - The notebook is structured such that it can be run end to end any time a new data cut becomes available to transform the raw data into a format for downstream analysis.
 # - Any heavy blocks of code have been written as functions in a seperate "data_wrangling_functions.py" Python file and imported into this notebook.
 #
-#### Stage 5.1 - Ingest Data
+#### Stage 1.1 - Ingest Data
 # First stage is to load the raw data from CSV file as generated from the World Bank's [open data portal](https://databank.worldbank.org/home.aspx).
 # Two files are of interest:
 # - The larger file containing "world development indicators" organised by country and year.
@@ -44,7 +44,7 @@ raw_worldbank_country_metadata = pd.read_csv(data_path + "world_bank_country_met
 raw_worldbank_country_metadata.loc[raw_worldbank_country_metadata["Code"] == "PRK"]
 
 #%% [markdown]
-#### Stage 5.2 - Trimming
+#### Stage 1.2 - Trimming
 # This part of the process will:
 # - Trim the last 5 rows from the data set as they do not contain data (could be considered redundant given next step below);
 #
@@ -56,7 +56,7 @@ trimmed_worldbank_data = raw_worldbank_data.head(-5)
 trimmed_worldbank_data.tail(10)
 
 #%% [markdown]
-#### Stage 5.3 - Filtering
+#### Stage 1.3 - Filtering
 # This part of the process will:
 # - Filter down to the set of "Series Name" that I am interested in analysing.
 #
@@ -116,14 +116,14 @@ filtered_worldbank_data = trimmed_worldbank_data.loc[trimmed_worldbank_data['Ser
 filtered_worldbank_data["Series Name"].value_counts()
 
 #%% [markdown]
-#### Stage 5.4 - Process Blank Cells
+#### Stage 1.4 - Process Blank Cells
 # One simple step is required at this stage to clean up the cells that to contain no data : that is to replace the instances of ".." with NaN.
 #
 #%%
 cleansed_world_data = filtered_worldbank_data.replace(to_replace='..', value=np.nan)
 
 #%% [markdown]
-#### Stage 5.5 - Unpivoting
+#### Stage 1.5 - Unpivoting
 # This part of the process will:
 # - Rename the year columns - a pre-quisite to support the next step;
 # - Unpivot the data such that the individual year columns are collapsed into single column to achieve a "thin and tall" data structure;
@@ -145,7 +145,7 @@ reshaped_worldbank_data.shape
 reshaped_worldbank_data.head(5)
 
 #%% [markdown]
-#### Stage 5.6 - Add Country Metadata
+#### Stage 1.6 - Add Country Metadata
 #
 #%%
 raw_worldbank_country_metadata.columns
@@ -170,7 +170,7 @@ merged_data.head(10)
 merged_data.dtypes
 
 #%% [markdown]
-#### Stage 5.7 - Pivoting
+#### Stage 1.7 - Pivoting
 # This part of the process will:
 # - Pivot the data such that the individual series data are each placed into their own columns to achieve a "fatter and less tall" data stucture.
 #
@@ -187,7 +187,7 @@ pivoted_worldbank_data.head(100)
 pivoted_worldbank_data.dtypes
 
 #%% [markdown]
-#### Stage 5.8 - Write To File
+#### Stage 1.8 - Write To File
 # Now we write the resulting data frame to the Pickle file format to preserve all meta data.
 
 #%%
