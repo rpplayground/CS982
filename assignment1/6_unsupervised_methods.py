@@ -1,3 +1,4 @@
+
 #%% [markdown]
 #University of Strathclyde - MSc Artificial Intelligence and Applications
 #
