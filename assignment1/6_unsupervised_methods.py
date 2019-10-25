@@ -6,7 +6,7 @@
 #
 #File Created first created 9th October 2019 by Barry Smart.
 # 
-## Stage 6 - Unsupervised Analysis
+## Stage 6 - Application of Unsupervised Methods
 #The purpose of this notebook is to run a range of unsupervised models on the data.
 #The objective is to determine how successfully clustering models can be used to label given the *ground truth* of *Income GrouP*.
 #
@@ -41,8 +41,8 @@ region_palette = {"North America" : "red", "Europe & Central Asia" : "blue",\
 # Read in the file that was generated from the warngling and cleaning scripts.
 
 #%%
-# github_path = "C:/Users/Barry/"
-github_path = "C:/Users/cgb19156/"
+github_path = "C:/Users/Barry/"
+#github_path = "C:/Users/cgb19156/"
 data_path = github_path + "GitHub/CS982/assignment1/"
 interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 #%% [markdown]
@@ -102,13 +102,8 @@ dataset_variables.describe()
 #%% [markdown]
 # 4. Scale the data that we are going to use for clustering
 #%%
-X = pd.DataFrame(scale(dataset_variables))
-
-#%%
-X.head(10)
-
-#%%
-X.describe()
+X = scale(dataset_variables)
+X
 
 #%% [markdown]
 # 5. We know that there are 3 possible categories for the data. Create 3 data clusters using #Agglomerative Hierarchical Clustering.
