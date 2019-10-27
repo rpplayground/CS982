@@ -38,10 +38,17 @@ github_path = "C:/Users/Barry/"
 #github_path = "C:/Users/cgb19156/"
 data_path = github_path + "GitHub/CS982/assignment1/"
 raw_worldbank_data = pd.read_csv(data_path + "world_bank_data.csv")
+
 #%%
 raw_worldbank_country_metadata = pd.read_csv(data_path + "world_bank_country_metadata.csv")
 #%%
 raw_worldbank_country_metadata.loc[raw_worldbank_country_metadata["Code"] == "PRK"]
+
+#%%
+raw_google_country_metadata = pd.read_csv(data_path + "google_DSPL_countries.csv")
+
+#%%
+raw_google_country_metadata.head(10)
 
 #%% [markdown]
 #### Stage 1.2 - Trimming
@@ -144,44 +151,76 @@ reshaped_worldbank_data.shape
 #%%
 reshaped_worldbank_data.head(5)
 
+
 #%% [markdown]
-#### Stage 1.6 - Add Country Metadata
+#### Stage 1.6 - Create Merged Country Meta Data
+# Here we will extend the World Bank country meta data with data published by Google that provides latitude and longitude data for each country;
 #
 #%%
 raw_worldbank_country_metadata.columns
 #%%
-country_metadata = raw_worldbank_country_metadata[["Code", "Short Name", "Long Name", "Income Group", "Region"]]
+raw_google_country_metadata.columns
+
+#%%
+country_metadata = raw_worldbank_country_metadata.merge(raw_google_country_metadata, left_on="2-alpha code", right_on="country")
+
+#%%
+country_metadata = country_metadata[["Code", "Short Name", "Income Group", "Region", "latitude", "longitude"]]
+
+#%%
+country_metadata = country_metadata.rename(columns = { "Short Name" : "Country"})
 
 #%%
 country_metadata.head(10)
+
+#%%
+# Checking that no countries have been left without a latitude and longitude
+country_metadata.loc[country_metadata["longitude"] == np.NaN].shape
+
+#%% [markdown]
+#### Stage 1.7 - Merge Country Metadata Into Main Data Set
+# Here we will extend the World Bank country metadata (Region, Income Group) including data published by Google that provides latitude and longitude data for each country;
+
 #%%
 merged_data = reshaped_worldbank_data.merge(country_metadata, left_on="Country Code", right_on="Code")
+
+#%%
+merged_data.head(10)
+
+#%%
+merged_data.shape
+
+#%% [markdown]
+#### Stage 1.8 - Time Dimension
+# Here we process the Year colun to create a useful Decade column and convert Year from a string into an integer.
+
 #%%
 merged_data["Decade"] = merged_data["Year"].str.slice(start=0, stop=3) + "0s"
+
 #%%
 merged_data = merged_data.astype({"Year" : "int"})
 
 #%%
-merged_data = merged_data.rename(columns = { "Short Name" : "Country"})
-
-#%%
 merged_data.head(10)
+
 #%%
 merged_data.dtypes
 
 #%% [markdown]
-#### Stage 1.7 - Pivoting
+#### Stage 1.6 - Pivoting
 # This part of the process will:
-# - Pivot the data such that the individual series data are each placed into their own columns to achieve a "fatter and less tall" data stucture.
+# 1. Pivot the data such that the individual series data are each placed into their own columns to achieve a "fatter and less tall" data stucture;
+# 2. In doing so, create a useful multi-index that can be used to slice and group data later in the process.
 #
 #%%
-pivoted_worldbank_data = pd.pivot_table(merged_data, index=["Region", "Income Group", "Country", "Decade", "Year"], columns="Series Name", values="value")
+pivoted_worldbank_data = pd.pivot_table(merged_data, index=["Region", "Income Group", "Country", "latitude", "longitude", "Decade", "Year"], columns="Series Name", values="value")
+
 #%%
 pivoted_worldbank_data.shape
 #%%
 pivoted_worldbank_data.describe()
 #%%
-pivoted_worldbank_data.head(100)
+pivoted_worldbank_data.head(60)
 
 #%%
 pivoted_worldbank_data.dtypes

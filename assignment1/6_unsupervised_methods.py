@@ -73,8 +73,14 @@ interpolated_data_set_flattened.head(10)
 
 #%% [markdown]
 ### Stage 6.2 - Agglomerative Model
-# Blurb.
-
+# Really useful documentation about this model in the [SciKit Learn web site](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html#sklearn.cluster.AgglomerativeClustering)
+#
+# "Recursively merges the pair of clusters that minimally increases a given linkage distance."
+#
+# Key parameters are as follows:
+# - Affinity - method used to compute the linkage - can be: “euclidean”, “l1”, “l2”, “manhattan”, “cosine”, or “precomputed”;
+# - Linkage - which linkage criterion to use. The linkage criterion determines which distance to use between sets of observation. The algorithm will merge the pairs of cluster that minimize this criterion.
+#
 #%%
 # Dropping NA values as they will cause the model to break!
 interpolated_data_set_flattened_nulls_removed = interpolated_data_set_flattened.\
@@ -82,7 +88,7 @@ interpolated_data_set_flattened_nulls_removed = interpolated_data_set_flattened.
          "Log GDP per Capita",\
               "Life expectancy at birth, total (years)",\
                    "Population growth (annual %)",
-                        "Year"]]\
+                        "Year", "latitude"]]\
         .dropna()
 
 #%%
@@ -207,39 +213,32 @@ interpolated_data_set_flattened_nulls_removed.head(10)
 #%%
 income_group_palette = {"High income": "red", "Upper middle income": "orange", "Lower middle income": "green", "Low income": "blue"}
 cluster_palette = {3: "red", 0: "orange", 2: "green", 1: "blue"}
+diff_palette = {4: "darkred", 3: "red", 2: "orangered", 1: "orange", 0: "black",\
+    -4: "darkgreen", -3: "seagreen", -2: "green", -1: "lightgreen"}
 
 
 #%%
-sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
-f, ax = plt.subplots(figsize=(10, 10))
-sns.scatterplot(x="Log GDP per Capita", y="Life expectancy at birth, total (years)",\
-    hue="Income Group",\
-    palette = income_group_palette,\
-    #size="Population, total",\
-    #hue_order=region_ranking,\
-    sizes=(10,1000), linewidth=1,\
-    data=interpolated_data_set_flattened_nulls_removed, ax=ax)
+def plot_clusters(dataframe, x_column, y_column, hue_column, hue_palette):
+    sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
+    f, ax = plt.subplots(figsize=(10, 10))
+    sns.scatterplot(x = x_column, y = y_column,\
+        hue = hue_column,\
+        palette = hue_palette,\
+        linewidth = 1,\
+        data=dataframe, ax = ax)
 
 #%%
-sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
-f, ax = plt.subplots(figsize=(10, 10))
-sns.scatterplot(x="Log GDP per Capita", y="Life expectancy at birth, total (years)",\
-    hue="agglomeative_cluster",\
-    palette = cluster_palette,\
-    #size="Population, total",\
-    #hue_order=region_ranking,\
-    sizes=(10,1000), linewidth=1,\
-    data=interpolated_data_set_flattened_nulls_removed, ax=ax)
+plot_clusters(interpolated_data_set_flattened_nulls_removed, "Log GDP per Capita",\
+    "Life expectancy at birth, total (years)", "Income Group", income_group_palette)
 
 #%%
-sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
-f, ax = plt.subplots(figsize=(10, 10))
-sns.scatterplot(x="Log GDP per Capita", y="Life expectancy at birth, total (years)",\
-    hue="label_diff",\
-    #size="Population, total",\
-    #hue_order=region_ranking,\
-    sizes=(10,1000), linewidth=1,\
-    data=interpolated_data_set_flattened_nulls_removed, ax=ax)
+plot_clusters(interpolated_data_set_flattened_nulls_removed, "Log GDP per Capita",\
+    "Life expectancy at birth, total (years)", "agglomeative_cluster", cluster_palette)
+
+#%%
+plot_clusters(interpolated_data_set_flattened_nulls_removed, "Log GDP per Capita",\
+    "Life expectancy at birth, total (years)", "label_diff", diff_palette)
+
 
 #%%
 interpolated_data_set_flattened_nulls_removed_2018 = \
@@ -247,33 +246,76 @@ interpolated_data_set_flattened_nulls_removed_2018 = \
         loc[interpolated_data_set_flattened_nulls_removed['Year'] == 2018]
 
 #%%
-sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
-f, ax = plt.subplots(figsize=(10, 10))
-sns.scatterplot(x="Log GDP per Capita", y="Life expectancy at birth, total (years)",\
-    hue="Income Group",\
-    palette = income_group_palette,\
-    #size="Population, total",\
-    #hue_order=region_ranking,\
-    sizes=(10,1000), linewidth=1,\
-    data=interpolated_data_set_flattened_nulls_removed_2018, ax=ax)
+plot_clusters(interpolated_data_set_flattened_nulls_removed_2018, "Log GDP per Capita",\
+    "Life expectancy at birth, total (years)", "Income Group", income_group_palette)
 
 #%%
-sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
-f, ax = plt.subplots(figsize=(10, 10))
-sns.scatterplot(x="Log GDP per Capita", y="Life expectancy at birth, total (years)",\
-    hue="agglomeative_cluster",\
-    palette = cluster_palette,\
-    #size="Population, total",\
-    #hue_order=region_ranking,\
-    sizes=(10,1000), linewidth=1,\
-    data=interpolated_data_set_flattened_nulls_removed_2018, ax=ax)
+plot_clusters(interpolated_data_set_flattened_nulls_removed_2018, "Log GDP per Capita",\
+    "Life expectancy at birth, total (years)", "agglomeative_cluster", cluster_palette)
 
 #%%
-sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
-f, ax = plt.subplots(figsize=(10, 10))
-sns.scatterplot(x="Log GDP per Capita", y="Life expectancy at birth, total (years)",\
-    hue="label_diff",\
-    #size="Population, total",\
-    #hue_order=region_ranking,\
-    sizes=(10,1000), linewidth=1,\
-    data=interpolated_data_set_flattened_nulls_removed_2018, ax=ax)
+plot_clusters(interpolated_data_set_flattened_nulls_removed_2018, "Log GDP per Capita",\
+    "Life expectancy at birth, total (years)", "label_diff", diff_palette)
+
+#%%
+def run_agglomerative_model(X, Y, target_number_of_clusters):
+    affinity_list = ["euclidean", "l1", "l2", "manhattan", "cosine"]
+    linkage_list = ["ward", "complete", "average"]
+    results_dataframe = pd.DataFrame([])
+    for affinity_option in affinity_list:
+        for linkage_option in linkage_list:
+            if(linkage_option == "ward" and affinity_option != "euclidean"):
+                # If linkage is “ward”, only “euclidean” is accepted. 
+                continue
+            else:
+                agglomerative_model = cluster.AgglomerativeClustering(n_clusters=target_number_of_clusters,\
+                    linkage=linkage_option, affinity=affinity_option)
+                agglomerative_model.fit(X)
+                silhouette_score = metrics.silhouette_score(X, agglomerative_model.labels_)
+                completeness_score = metrics.completeness_score(Y, agglomerative_model.labels_)
+                homogeneity_score = metrics.homogeneity_score(Y, agglomerative_model.labels_)
+                print("Affinity: {}, Linkage: {}, Silhouette: {:0.3f}, Completeness: {:0.3f}, Homogeneity: {:0.3f}".\
+                    format(affinity_option, linkage_option, silhouette_score, completeness_score, homogeneity_score))
+                results_dataframe = results_dataframe.append({"Affinity" : affinity_option, "Linkage" : linkage_option,\
+                    "Silhouette" : silhouette_score, "Completeness" : completeness_score, "Homogeneity" : homogeneity_score}, ignore_index=True)
+    return results_dataframe
+    
+
+#%%
+agglomerative_dataframe = run_agglomerative_model(X, Y, target_number_of_clusters)
+
+
+#%% [markdown]
+### Stage 6.3 - K Means
+# Useful documentation from Scikit Learn web site:
+# [https://scikit-learn.org/stable/modules/clustering.html#k-means] (https://scikit-learn.org/stable/modules/clustering.html#k-means)
+# 
+# Documentation for the 
+
+#%%
+def run_k_means_model(X, Y, max_number_of_clusters):
+    results_dataframe = pd.DataFrame([])
+    for k_means_number_of_clusters in range(2, max_number_of_clusters+1):
+        # Configure the model
+        kmeans_model = cluster.KMeans(n_clusters=k_means_number_of_clusters)
+        # Run the model
+        kmeans_model.fit(X)
+        # Score the model
+        silhouette_score = metrics.silhouette_score(X, kmeans_model.labels_)
+        completeness_score = metrics.completeness_score(Y, kmeans_model.labels_)
+        homogeneity_score = metrics.homogeneity_score(Y, kmeans_model.labels_)
+        # Print the results
+        print("Number of clusters: {}, Silhouette: {:0.3f}, Completeness: {:0.3f}, Homogeneity: {:0.3f}".\
+        format(k_means_number_of_clusters, silhouette_score, completeness_score, homogeneity_score))
+        # Capture the results
+        results_dataframe = results_dataframe.append({"k_means_number_of_clusters" : k_means_number_of_clusters,\
+        "silhouette_score" : silhouette_score, "completeness_score" : completeness_score, "homogeneity_score" : homogeneity_score}, ignore_index=True)
+    return results_dataframe
+
+#%%
+kmeans_dataframe = run_k_means_model(X, Y, 10)
+
+
+#%% [markdown]
+### Principle Components Analysis?
+
