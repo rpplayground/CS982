@@ -32,8 +32,8 @@ region_palette = {"North America" : "red", "Europe & Central Asia" : "blue",\
 # Read in the file that was generated from the previous script.
 
 #%%
-github_path = "C:/Users/Barry/"
-#github_path = "C:/Users/cgb19156/"
+#github_path = "C:/Users/Barry/"
+github_path = "C:/Users/cgb19156.DS/"
 data_path = github_path + "GitHub/CS982/assignment1/"
 interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 #%% [markdown]
@@ -96,7 +96,9 @@ sns.heatmap(correlation_matrix,\
     vmax=1, center=0,\
     square=True, linewidths=.5, cbar_kws={"shrink": .5})
 
-
+#%%
+#from pandas.plotting import scatter_matrix
+#scatter_matrix(interpolated_data_set)
 
 #%%
 min_power, min_value, max_power, max_value = dwf.find_min_and_max(analysis_of_2018_flattened, "GDP per capita (current US$)")
@@ -140,6 +142,10 @@ sns.scatterplot(x="GDP per capita (current US$)", y="Population growth (annual %
     data=analysis_of_2018_flattened, ax=ax)
 
 
+#%%
+sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
+sns.lmplot(x="GDP per capita (current US$)", y="Life expectancy at birth, total (years)",\
+    height=8, data=analysis_of_2018_flattened)
 #%%
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
 sns.lmplot(x="Log GDP per Capita", y="Life expectancy at birth, total (years)",\

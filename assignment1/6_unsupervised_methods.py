@@ -26,7 +26,7 @@ from sklearn import metrics
 from sklearn import cluster
 from sklearn.preprocessing import scale
 from sklearn.preprocessing import LabelEncoder
-
+from scipy.cluster.hierarchy import dendrogram, linkage
 
 #%%
 region_ranking = ["North America", "Europe & Central Asia", "Middle East & North Africa",\
@@ -41,8 +41,8 @@ region_palette = {"North America" : "red", "Europe & Central Asia" : "blue",\
 # Read in the file that was generated from the warngling and cleaning scripts.
 
 #%%
-github_path = "C:/Users/Barry/"
-#github_path = "C:/Users/cgb19156/"
+#github_path = "C:/Users/Barry/"
+github_path = "C:/Users/cgb19156.DS/"
 data_path = github_path + "GitHub/CS982/assignment1/"
 interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 #%% [markdown]
@@ -65,11 +65,14 @@ mean_by_region_and_decade.index.name = 'ID'
 mean_by_country_and_decade = interpolated_data_set.groupby(level=["Region", "Country", "Decade"]).mean().reset_index()
 mean_by_country_and_decade.index.name = 'ID'
 
-#%%
-interpolated_data_set_flattened.columns
 
 #%%
-interpolated_data_set_flattened.head(10)
+analysis_of_decade = interpolated_data_set.xs("1990s", level="Decade", drop_level=False)
+analysis_of_decade = analysis_of_decade.groupby(level=["Region", "Income Group", "Country", "Decade"]).\
+    mean().reset_index()
+
+#%%
+analysis_of_decade
 
 #%% [markdown]
 ### Stage 6.2 - Agglomerative Model
@@ -83,23 +86,25 @@ interpolated_data_set_flattened.head(10)
 #
 #%%
 # Dropping NA values as they will cause the model to break!
-interpolated_data_set_flattened_nulls_removed = interpolated_data_set_flattened.\
+analysis_of_decade_nulls_removed = analysis_of_decade.\
     loc[:, ["Income Group",\
          "Log GDP per Capita",\
               "Life expectancy at birth, total (years)",\
-                   "Population growth (annual %)",
-                        "Year", "latitude"]]\
+                   "Renewable energy consumption (% of total final energy consumption)",\
+                        "Immunization, DPT (% of children ages 12-23 months)",\
+                            "Urban population growth (annual %)",\
+                                "Mortality rate, infant (per 1,000 live births)"]]\
         .dropna()
 
 #%%
-ground_truth = interpolated_data_set_flattened_nulls_removed.iloc[:,0]
+ground_truth = analysis_of_decade_nulls_removed.iloc[:,0]
 ground_truth.head(10)
 
 #%%
 ground_truth.value_counts()
 
 #%%
-dataset_variables = interpolated_data_set_flattened_nulls_removed.iloc[:, 1:]
+dataset_variables = analysis_of_decade_nulls_removed.iloc[:, 1:]
 dataset_variables.head(10)
 
 #%%
@@ -184,35 +189,36 @@ metrics.completeness_score(Y, model.labels_)
 metrics.homogeneity_score(Y, model.labels_)
 
 #%%
-interpolated_data_set_flattened_nulls_removed["agglomeative_cluster"] = model.labels_
+analysis_of_decade_nulls_removed["agglomeative_cluster"] = model.labels_
 
 #%%
 def label_income_group (row):
     if row["Income Group"] == "High income":
         return 0
     if row["Income Group"] == "Upper middle income":
-        return 3
-    if row["Income Group"] == "Lower middle income":
         return 2
+    if row["Income Group"] == "Lower middle income":
+        return 3
     if row["Income Group"] == "Low income":
         return 1
     return 4
 
 #%%
-interpolated_data_set_flattened_nulls_removed['income_group_label'] = \
-    interpolated_data_set_flattened_nulls_removed.apply (lambda row: label_income_group(row), axis=1)
+analysis_of_decade_nulls_removed['income_group_label'] = \
+    analysis_of_decade_nulls_removed.apply (lambda row: label_income_group(row), axis=1)
 
-interpolated_data_set_flattened_nulls_removed.head(10)
+analysis_of_decade_nulls_removed.head(10)
 
 #%%
-interpolated_data_set_flattened_nulls_removed['label_diff'] = interpolated_data_set_flattened_nulls_removed['income_group_label']\
-     - interpolated_data_set_flattened_nulls_removed['agglomeative_cluster']
+analysis_of_decade_nulls_removed['label_diff'] = analysis_of_decade_nulls_removed['income_group_label']\
+     - analysis_of_decade_nulls_removed['agglomeative_cluster']
 
-interpolated_data_set_flattened_nulls_removed.head(10)
+analysis_of_decade_nulls_removed.head(10)
 
 #%%
 income_group_palette = {"High income": "red", "Upper middle income": "orange", "Lower middle income": "green", "Low income": "blue"}
-cluster_palette = {3: "red", 0: "orange", 2: "green", 1: "blue"}
+#cluster_palette = {3: "red", 0: "orange", 2: "green", 1: "blue"}
+cluster_palette = {3: "green", 0: "red", 2: "orange", 1: "blue"}
 diff_palette = {4: "darkred", 3: "red", 2: "orangered", 1: "orange", 0: "black",\
     -4: "darkgreen", -3: "seagreen", -2: "green", -1: "lightgreen"}
 
@@ -224,38 +230,43 @@ def plot_clusters(dataframe, x_column, y_column, hue_column, hue_palette):
     sns.scatterplot(x = x_column, y = y_column,\
         hue = hue_column,\
         palette = hue_palette,\
-        linewidth = 1,\
+        sizes = 100,\
+        alpha = 0.8,\
+        linewidth = 0,\
         data=dataframe, ax = ax)
 
 #%%
-plot_clusters(interpolated_data_set_flattened_nulls_removed, "Log GDP per Capita",\
+plot_clusters(analysis_of_decade_nulls_removed, "Log GDP per Capita",\
     "Life expectancy at birth, total (years)", "Income Group", income_group_palette)
 
 #%%
-plot_clusters(interpolated_data_set_flattened_nulls_removed, "Log GDP per Capita",\
+plot_clusters(analysis_of_decade_nulls_removed, "Log GDP per Capita",\
     "Life expectancy at birth, total (years)", "agglomeative_cluster", cluster_palette)
 
 #%%
-plot_clusters(interpolated_data_set_flattened_nulls_removed, "Log GDP per Capita",\
+plot_clusters(analysis_of_decade_nulls_removed, "Log GDP per Capita",\
     "Life expectancy at birth, total (years)", "label_diff", diff_palette)
 
+#%% [markdown]
+### Dendogram
 
 #%%
-interpolated_data_set_flattened_nulls_removed_2018 = \
-    interpolated_data_set_flattened_nulls_removed.\
-        loc[interpolated_data_set_flattened_nulls_removed['Year'] == 2018]
+linkage_model = linkage(X, 'ward')
+sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
+f, ax = plt.subplots(figsize=(25, 10))
+plt.title('Hierarchical Clustering Dendrogram')
+plt.xlabel('sample index')
+plt.ylabel('distance')
+dendrogram(linkage_model, leaf_rotation=90., leaf_font_size=8.,)
+locs, labels = plt.xticks()
+plt.show()
 
 #%%
-plot_clusters(interpolated_data_set_flattened_nulls_removed_2018, "Log GDP per Capita",\
-    "Life expectancy at birth, total (years)", "Income Group", income_group_palette)
+labels[0]
 
 #%%
-plot_clusters(interpolated_data_set_flattened_nulls_removed_2018, "Log GDP per Capita",\
-    "Life expectancy at birth, total (years)", "agglomeative_cluster", cluster_palette)
+X
 
-#%%
-plot_clusters(interpolated_data_set_flattened_nulls_removed_2018, "Log GDP per Capita",\
-    "Life expectancy at birth, total (years)", "label_diff", diff_palette)
 
 #%%
 def run_agglomerative_model(X, Y, target_number_of_clusters):
@@ -283,6 +294,8 @@ def run_agglomerative_model(X, Y, target_number_of_clusters):
 
 #%%
 agglomerative_dataframe = run_agglomerative_model(X, Y, target_number_of_clusters)
+agglomerative_dataframe
+
 
 
 #%% [markdown]
@@ -318,4 +331,7 @@ kmeans_dataframe = run_k_means_model(X, Y, 10)
 
 #%% [markdown]
 ### Principle Components Analysis?
-
+#  Read about Principle Component Analysis and look at this example:
+# http://scikit-learn.org/stable/auto_examples/decomposition/plot_pca_iris.html
+#
+# Consider how it could be applied to clustering in our examples.
