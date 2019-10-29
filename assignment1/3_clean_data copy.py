@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 import matplotlib as plt
 import seaborn as sns
+import matplotlib.pyplot as plt
 import scipy
 
 #%% [markdown]
@@ -42,7 +43,7 @@ pivoted_worldbank_data
 interpolated_data_set = pivoted_worldbank_data.groupby(level="Country").apply(lambda group: group.interpolate(method='linear', limit_direction='forward', limit=60))
 
 #%%
-interpolated_data_set
+pivoted_worldbank_data.isnull().sum(axis = 0) - interpolated_data_set.isnull().sum(axis = 0)
 
 #%%
 #interpolated_data_set = interpolated_data_set.fillna(0)
@@ -52,24 +53,52 @@ interpolated_data_set
 # Generate some visualisations to show how the interpolation has worked.
 
 #%%
-# Using pd.IndexSlice to slice at "Country" level (ie level 2) for three interesting countries.
-pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['Afghanistan', 'Iran', 'Iraq', 'Dem. People\'s Rep. Korea']], :]\
-    .loc[:, ["GDP per capita (current US$)"]].reset_index().groupby("Country").plot(x="Year")
+# This funtion places each sub plot onto the frame
+def create_sub_plot(figure, axes, x_position, y_position, data_series, x_column, y_column, title):
+    #sns.lineplot(x="Year", y=y_column, data=data_series, ax=axes[x_position,y_position])
+    axes[x_position,y_position].plot(data_series[y_column], color="black")
+    axes[x_position,y_position].set_title(title)
+
+# This function configures the frame and then iterates through the results to create slices of the data that can be plotted
+def plot_interpolation_results(list_of_dataframes, list_of_countries, column_to_plot, share_x=True):
+    country_dimension = len(list_of_countries)
+    dataframe_dimension = len(list_of_dataframes)
+    # Set up the number of sub plots based on the dimensions of experiments and points
+    figure_size_unit = 8 # This governs the size of each subplot on the figure 
+    sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
+    plt.rcParams.update({'axes.titlesize' : 18, 'lines.linewidth' : 3,\
+         'axes.labelsize' : 16, 'xtick.labelsize' : 16, 'ytick.labelsize' : 16})
+    figure, axes = plt.subplots(country_dimension, 2, sharex=share_x, figsize=(figure_size_unit * dataframe_dimension, figure_size_unit * country_dimension))
+    for country_index, country in enumerate(list_of_countries):
+        for dataframe_index, dataframe in enumerate(list_of_dataframes):
+            # Use the "cross section" method to grab the results for a specific experiment and points configuration
+            dataframe_to_plot = dataframe.loc[pd.IndexSlice[:,:,[country]], :].loc[:, [column_to_plot]].\
+                reset_index(level=["Region", "Income Group", "Country", "latitude", "longitude", "Decade"])
+            # Set up the title for the plot
+            if dataframe_index == 0:
+                title = column_to_plot + "\nData For " + country + " Before Interpolation"
+            else:
+                title = column_to_plot + "\nData for " + country + " After Interpolation"
+            # Send the data off to get plotted
+            create_sub_plot(figure, axes, country_index, dataframe_index , dataframe_to_plot, "Year", column_to_plot, title)
+    plt.subplots_adjust(hspace=.4)
 
 #%%
-# Now showing the same data for the interpolated data set!
-interpolated_data_set.loc[pd.IndexSlice[:,:,['Afghanistan', 'Iran', 'Iraq', 'Dem. People\'s Rep. Korea']], :]\
-    .loc[:, ["GDP per capita (current US$)"]].reset_index().groupby("Country").plot(x="Year")
+plot_interpolation_results([pivoted_worldbank_data, interpolated_data_set], ['Afghanistan', 'Iran', 'Iraq'], "GDP per capita (current US$)", share_x=False)
 
 #%%
-# Using pd.IndexSlice to slice at "Country" level (ie level 2) for three interesting countries.
-pivoted_worldbank_data.loc[pd.IndexSlice[:,:,['Afghanistan', 'Iran', 'Iraq', 'Dem. People\'s Rep. Korea']], :]\
-    .loc[:, ["Electric power consumption (kWh per capita)"]].reset_index().groupby("Country").plot(x="Year")
+plot_interpolation_results([pivoted_worldbank_data, interpolated_data_set], ['Dem. People\'s Rep. Korea', 'Australia', 'Iraq'], "Electric power consumption (kWh per capita)", share_x=True)
+
+#%% [markdown]
+#### Stage 6.4 - Check Countries
+# Now check if there are any countries in the data set that need to be removed.
+#%%
+mean_by_country = interpolated_data_set.groupby(level=["Region", "Country"]).mean()
+list_of_regions = set(mean_by_country.index.get_level_values("Region"))
 
 #%%
-# Now showing the same data for the interpolated data set!
-interpolated_data_set.loc[pd.IndexSlice[:,:,['Afghanistan', 'Iran', 'Iraq', 'Dem. People\'s Rep. Korea']], :]\
-    .loc[:, ["Electric power consumption (kWh per capita)"]].reset_index().groupby("Country").plot(x="Year")
+analysis_of_2018 = interpolated_data_set.xs(2018, level="Year", drop_level=False).reset_index(level=["Income Group", "latitude", "longitude", "Decade", "Year"])
+analysis_of_2018.style
 
 #%% [markdown]
 #### Stage 6.4 - Write To File
