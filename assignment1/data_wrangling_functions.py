@@ -35,6 +35,9 @@ def find_min_and_max (data_frame, column_name):
     return min_power, min_value, max_power, max_value
 
 def add_annotation(ax, row, x_column, y_column, label_column, offset_x, offset_y):
+    print("Adding annotation:")
+    print(row)
+    print(x_column, y_column, offset_x, offset_y)
     offset = 50
     ax.annotate(\
         s = row[label_column],\
@@ -58,9 +61,11 @@ def look_up_offsets(offset_label):
     return offset_tuple[0], offset_tuple[1]
 
 def plot_points_of_interest(data_frame, points_of_interest, x_column, y_column, size_column, label_column, ax):
+    trimmed_data_frame = data_frame.loc[:, [x_column, y_column, size_column, label_column]].dropna()
     for point_of_interest in points_of_interest:
         offset_x, offset_y = look_up_offsets(point_of_interest[1])
-        row = data_frame.loc[data_frame[label_column] == point_of_interest[0]]
+        row = trimmed_data_frame.loc[trimmed_data_frame[label_column] == point_of_interest[0]]
+        print(row)
         add_annotation(ax, row, x_column, y_column, label_column, offset_x, offset_y)
 
 
@@ -69,6 +74,7 @@ def label_max_and_mins(data_frame, x_column, y_column, size_column, label_column
     list_of_columns = [x_column, y_column, size_column]
     for column in list_of_columns:
         max_x = trimmed_data_frame.loc[trimmed_data_frame[column].idxmax()]
+        print(max_x)
         add_annotation(ax, max_x, x_column, y_column, label_column, -1, -1)
         min_x = trimmed_data_frame.loc[trimmed_data_frame[column].idxmin()]
         add_annotation(ax, min_x, x_column, y_column, label_column, 1, 1)

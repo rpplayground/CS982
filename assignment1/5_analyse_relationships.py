@@ -32,8 +32,8 @@ region_palette = {"North America" : "red", "Europe & Central Asia" : "blue",\
 # Read in the file that was generated from the previous script.
 
 #%%
-#github_path = "C:/Users/Barry/"
-github_path = "C:/Users/cgb19156.DS/"
+github_path = "C:/Users/Barry/"
+#github_path = "C:/Users/cgb19156.DS/"
 data_path = github_path + "GitHub/CS982/assignment1/"
 interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 #%% [markdown]
@@ -116,7 +116,7 @@ sns.scatterplot(x="GDP per capita (current US$)", y="Life expectancy at birth, t
     sizes=(10,1000), linewidth=1,\
     data=analysis_of_2018_flattened, ax=ax)
 
-max_x = analysis_of_2018_flattened.loc[analysis_of_2018_flattened["GDP per capita (current US$)"].idxmax()]
+# max_x = analysis_of_2018_flattened.loc[analysis_of_2018_flattened["GDP per capita (current US$)"].idxmax()]
 
 # ax.annotate(\
 #         s = max_x["Country"],\
@@ -157,6 +157,45 @@ sns.lmplot(x="Log GDP per Capita", y="Population growth (annual %)",\
     height=8, data=analysis_of_2018_flattened)
 
 
+#%% [markdown]
+### Interactive plot of the data
+
+#%%
+def get_data_for_year(dataframe, year):
+    data_for_single_year = dataframe.xs(year, level="Year", drop_level=False)
+    # Flatten and select only the columns I need
+    data_for_single_year_flattened_and_trimmed = data_for_single_year.reset_index()[["Region", "Country", "Year", "GDP per capita (current US$)", "Life expectancy at birth, total (years)", "Population, total", "Population growth (annual %)"]]
+    # Add log base 10 of population to get better distribution on plot
+    data_for_single_year_flattened_and_trimmed["Log Population"] = np.log10(data_for_single_year_flattened_and_trimmed["Population, total"])
+    return data_for_single_year_flattened_and_trimmed
 
 
 #%%
+def country_scatterplot(country_dataframe, x_column, y_column, hue_column, size_column, x_min, x_max, x_scale="linear"):
+    # Set up the style and size of the plot
+    sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
+    f, ax = plt.subplots(figsize=(10, 10))
+    ax.set(xscale=x_scale)
+    ax.set_xlim(x_min, x_max)
+    # Now plot the data
+    sns.scatterplot(x=x_column, y=y_column,\
+        hue=hue_column,\
+        size=size_column,\
+        palette=region_palette,\
+        #hue_order=region_ranking,\
+        sizes=(50,5000), linewidth=1,\
+        alpha=1,\
+        data=country_dataframe, ax=ax)
+    
+    dwf.plot_points_of_interest(country_dataframe, [("China", "HP")], "GDP per capita (current US$)", "Life expectancy at birth, total (years)", "Population, total", "Country", ax)
+
+
+#%%
+test_dataframe = get_data_for_year(interpolated_data_set, 1965)
+min_power, min_value, max_power, max_value = dwf.find_min_and_max(interpolated_data_set_flattened, "GDP per capita (current US$)")
+country_scatterplot(test_dataframe, "GDP per capita (current US$)", "Life expectancy at birth, total (years)", "Region", "Population, total", min_value, max_value, x_scale="log")
+
+#%%
+test_dataframe
+
+# %%

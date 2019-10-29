@@ -73,7 +73,7 @@ def plot_interpolation_results(list_of_dataframes, list_of_countries, column_to_
         for dataframe_index, dataframe in enumerate(list_of_dataframes):
             # Use the "cross section" method to grab the results for a specific experiment and points configuration
             dataframe_to_plot = dataframe.loc[pd.IndexSlice[:,:,[country]], :].loc[:, [column_to_plot]].\
-                reset_index(level=["Region", "Income Group", "Country", "latitude", "longitude", "Decade"])
+                reset_index(level=["Region", "Income Group", "Country", "Decade"])
             # Set up the title for the plot
             if dataframe_index == 0:
                 title = column_to_plot + "\nData For " + country + " Before Interpolation"
@@ -97,7 +97,7 @@ mean_by_country = interpolated_data_set.groupby(level=["Region", "Country"]).mea
 list_of_regions = set(mean_by_country.index.get_level_values("Region"))
 
 #%%
-analysis_of_2018 = interpolated_data_set.xs(2018, level="Year", drop_level=False).reset_index(level=["Income Group", "latitude", "longitude", "Decade", "Year"])
+analysis_of_2018 = interpolated_data_set.xs(2018, level="Year", drop_level=False).reset_index(level=["Income Group", "Decade", "Year"])
 analysis_of_2018.style
 
 #%% [markdown]

@@ -44,12 +44,6 @@ raw_worldbank_country_metadata = pd.read_csv(data_path + "world_bank_country_met
 #%%
 raw_worldbank_country_metadata.loc[raw_worldbank_country_metadata["Code"] == "PRK"]
 
-#%%
-raw_google_country_metadata = pd.read_csv(data_path + "google_DSPL_countries.csv")
-
-#%%
-raw_google_country_metadata.head(10)
-
 #%% [markdown]
 #### Stage 1.2 - Trimming
 # This part of the process will:
@@ -153,19 +147,14 @@ reshaped_worldbank_data.head(5)
 
 
 #%% [markdown]
-#### Stage 1.6 - Create Merged Country Meta Data
-# Here we will extend the World Bank country meta data with data published by Google that provides latitude and longitude data for each country;
-#
+#### Stage 1.6 - Create Country Metadata
+# Here we prepare the World Bank country metadata
+
 #%%
 raw_worldbank_country_metadata.columns
-#%%
-raw_google_country_metadata.columns
 
 #%%
-country_metadata = raw_worldbank_country_metadata.merge(raw_google_country_metadata, left_on="2-alpha code", right_on="country")
-
-#%%
-country_metadata = country_metadata[["Code", "Short Name", "Income Group", "Region", "latitude", "longitude"]]
+country_metadata = raw_worldbank_country_metadata[["Code", "Short Name", "Income Group", "Region"]]
 
 #%%
 country_metadata = country_metadata.rename(columns = { "Short Name" : "Country"})
@@ -173,13 +162,9 @@ country_metadata = country_metadata.rename(columns = { "Short Name" : "Country"}
 #%%
 country_metadata.head(10)
 
-#%%
-# Checking that no countries have been left without a latitude and longitude
-country_metadata.loc[country_metadata["longitude"] == np.NaN].shape
-
 #%% [markdown]
 #### Stage 1.7 - Merge Country Metadata Into Main Data Set
-# Here we will extend the World Bank country metadata (Region, Income Group) including data published by Google that provides latitude and longitude data for each country;
+# Here we will extend the World Bank data with country metadata (Region, Income Group).
 
 #%%
 merged_data = reshaped_worldbank_data.merge(country_metadata, left_on="Country Code", right_on="Code")
@@ -213,7 +198,7 @@ merged_data.dtypes
 # 2. In doing so, create a useful multi-index that can be used to slice and group data later in the process.
 #
 #%%
-pivoted_worldbank_data = pd.pivot_table(merged_data, index=["Region", "Income Group", "Country", "latitude", "longitude", "Decade", "Year"], columns="Series Name", values="value")
+pivoted_worldbank_data = pd.pivot_table(merged_data, index=["Region", "Income Group", "Country", "Decade", "Year"], columns="Series Name", values="value")
 
 #%%
 pivoted_worldbank_data.shape
