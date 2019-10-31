@@ -65,6 +65,7 @@ analysis_of_2018 = interpolated_data_set.xs(2018, level="Year", drop_level=False
 # Flatten the dataframe to open up all columns for access by the matplotlib and seaborn libraries.
 analysis_of_2018_flattened = analysis_of_2018.reset_index()
 analysis_of_2018_flattened.index.name = 'ID'
+analysis_of_2018_flattened.shape
 
 #%% [markdown]
 ### Stage 7.4 - Analysis of Life Expectancy

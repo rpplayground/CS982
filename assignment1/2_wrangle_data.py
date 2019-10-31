@@ -163,6 +163,14 @@ country_metadata = country_metadata.rename(columns = { "Short Name" : "Country"}
 country_metadata.head(10)
 
 #%% [markdown]
+#### "Countries" that have empty Region and Income Group data...
+# This next step is important as these "dummy countries" will ultimately be dropped from the data when the pivot stage is applied below.
+
+# %%
+country_metadata.loc[pd.isnull(country_metadata["Region"])]
+
+
+#%% [markdown]
 #### Stage 1.7 - Merge Country Metadata Into Main Data Set
 # Here we will extend the World Bank data with country metadata (Region, Income Group).
 
@@ -173,7 +181,7 @@ merged_data = reshaped_worldbank_data.merge(country_metadata, left_on="Country C
 merged_data.head(10)
 
 #%%
-merged_data.shape
+merged_data["Country Name"].value_counts()
 
 #%% [markdown]
 #### Stage 1.8 - Time Dimension
@@ -206,7 +214,6 @@ pivoted_worldbank_data.shape
 pivoted_worldbank_data.describe()
 #%%
 pivoted_worldbank_data.head(60)
-
 #%%
 pivoted_worldbank_data.dtypes
 
@@ -216,4 +223,3 @@ pivoted_worldbank_data.dtypes
 
 #%%
 pivoted_worldbank_data.to_pickle(data_path + "pivoted_worldbank_data.pkl")
-

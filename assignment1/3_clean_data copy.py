@@ -33,20 +33,22 @@ pivoted_worldbank_data = pd.read_pickle(data_path + "pivoted_worldbank_data.pkl"
 pivoted_worldbank_data.shape
 
 #%%
-pivoted_worldbank_data
+pivoted_worldbank_data.reset_index()["Country"].value_counts()
 
 #%% [markdown]
 #### Stage 6.2 - Fill In The Missing Data
-# Fillin the blanks *only forwards* using linear interpolation.
+# Fill in the blanks *only forwards* using linear interpolation.
+# For each country in the Year dimension.
+# The following documentation was used:
+# (https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.interpolate.html)[https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.interpolate.html]
 
 #%%
 interpolated_data_set = pivoted_worldbank_data.groupby(level="Country").apply(lambda group: group.interpolate(method='linear', limit_direction='forward', limit=60))
 
 #%%
+# The following formula indicates how many null values have been filled in
 pivoted_worldbank_data.isnull().sum(axis = 0) - interpolated_data_set.isnull().sum(axis = 0)
 
-#%%
-#interpolated_data_set = interpolated_data_set.fillna(0)
 
 #%% [markdown]
 #### Stage 6.3 - Visualise The Results Of Filling In Missing Data
@@ -101,7 +103,13 @@ analysis_of_2018 = interpolated_data_set.xs(2018, level="Year", drop_level=False
 analysis_of_2018.style
 
 #%% [markdown]
-#### Stage 6.4 - Write To File
+#### Stage 6.5 - Fill In Other Dimension?
+# Fill in by Region by Year based on mean?
+
+
+
+#%% [markdown]
+#### Stage 6.6 - Write To File
 # Now we write the resulting data frame to the Pickle file format to preserve all meta data.
 
 #%%
