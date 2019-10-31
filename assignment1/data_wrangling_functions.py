@@ -78,3 +78,20 @@ def label_max_and_mins(data_frame, x_column, y_column, size_column, label_column
         add_annotation(ax, max_x, x_column, y_column, label_column, -1, -1)
         min_x = trimmed_data_frame.loc[trimmed_data_frame[column].idxmin()]
         add_annotation(ax, min_x, x_column, y_column, label_column, 1, 1)
+
+def assign_short_variable_names(data_frame, max_length):
+    # Grab the column names from the dataframe.
+    columns_to_process = data_frame.columns
+    column_renaming_plan = {}
+    new_column_names = []
+    for column_name in columns_to_process:
+        # If the column begins with 4 numbers, assume it is a year column
+        new_column_name = (column_name[:max_length] + '..') if len(column_name) > max_length else column_name
+        # Create a dictionary consisting of entries specifying current_column_name : new_column_name :
+        column_renaming_plan.update({column_name : new_column_name})
+        # Also build a list of the new column names as this may be useful
+        new_column_names = new_column_names + [new_column_name]
+    # Now appply the new names to the columns
+    new_data_frame = data_frame.rename(columns = column_renaming_plan)
+    # Return the dataframe
+    return new_data_frame, new_column_names

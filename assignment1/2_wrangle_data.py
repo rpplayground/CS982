@@ -97,9 +97,9 @@ list_of_series_names = [\
     # Environmental measures
     "Urban population growth (annual %)",\
     "Population density (people per sq. km of land area)",\
-    "Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (per 100,000 population)",\
-    "Mortality caused by road traffic injury (per 100,000 people)",\
-    "Mortality rate attributed to household and ambient air pollution, age-standardized (per 100,000 population)",\
+    #"Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (per 100,000 population)",\
+    #"Mortality caused by road traffic injury (per 100,000 people)",\
+    #"Mortality rate attributed to household and ambient air pollution, age-standardized (per 100,000 population)",\
     "Urban population growth (annual %)",\
     "Suicide mortality rate (per 100,000 population)",\
     # 

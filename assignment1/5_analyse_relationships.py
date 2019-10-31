@@ -43,6 +43,9 @@ interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 interpolated_data_set["Log GDP per Capita"] = np.log10(interpolated_data_set["GDP per capita (current US$)"])
 interpolated_data_set_flattened = interpolated_data_set.reset_index()
 
+interpolated_data_set_short_column_titles, list_of_columns = dwf.assign_short_variable_names(interpolated_data_set, 18)
+interpolated_data_set_short_column_titles = interpolated_data_set_short_column_titles.reset_index()
+
 #%%
 mean_by_region_and_year = interpolated_data_set.groupby(level=["Region", "Year"]).mean().reset_index()
 mean_by_region_and_year.index.name = 'ID'
@@ -61,8 +64,12 @@ mean_by_country_and_decade.index.name = 'ID'
 # Use the xs function to grab a cross section of the data, using the power of the multi-level-index.
 analysis_of_2018 = interpolated_data_set.xs(2018, level="Year", drop_level=False)
 # Flatten the dataframe to open up all columns for access by the matplotlib and seaborn libraries.
+
+analysis_of_2018, list_of_columns = dwf.assign_short_variable_names(analysis_of_2018, 18)
+
 analysis_of_2018_flattened = analysis_of_2018.reset_index()
 analysis_of_2018_flattened.index.name = 'ID'
+analysis_of_2018_flattened.head(10)
 
 #%% [markdown]
 ### Stage 7.2 - Heat Map Analysis of Correlations
@@ -75,7 +82,7 @@ analysis_of_2018_flattened.index.name = 'ID'
 
 #%%
 # Compute the correlation matrix
-correlation_matrix = interpolated_data_set.corr()
+correlation_matrix = interpolated_data_set_short_column_titles.corr()
 
 # Generate a mask for the upper triangle
 #mask = np.zeros_like(correlation_matrix, dtype=np.bool)
