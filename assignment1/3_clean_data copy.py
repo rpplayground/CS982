@@ -78,15 +78,15 @@ def plot_interpolation_results(list_of_dataframes, list_of_countries, column_to_
                 reset_index(level=["Region", "Income Group", "Country", "Decade"])
             # Set up the title for the plot
             if dataframe_index == 0:
-                title = column_to_plot + "\nData For " + country + " Before Interpolation"
+                title = column_to_plot + "\nBEFORE Interpolation For " + country
             else:
-                title = column_to_plot + "\nData for " + country + " After Interpolation"
+                title = column_to_plot + "\nAFTER Interpolation For " + country
             # Send the data off to get plotted
             create_sub_plot(figure, axes, country_index, dataframe_index , dataframe_to_plot, "Year", column_to_plot, title)
     plt.subplots_adjust(hspace=.4)
 
 #%%
-plot_interpolation_results([pivoted_worldbank_data, interpolated_data_set], ['Afghanistan', 'Iran', 'Iraq'], "GDP per capita (current US$)", share_x=False)
+plot_interpolation_results([pivoted_worldbank_data, interpolated_data_set], ['Afghanistan', 'Iraq'], "GDP per capita (current US$)", share_x=False)
 
 #%%
 plot_interpolation_results([pivoted_worldbank_data, interpolated_data_set], ['Dem. People\'s Rep. Korea', 'Australia', 'Iraq'], "Electric power consumption (kWh per capita)", share_x=True)
@@ -103,10 +103,15 @@ analysis_of_2018 = interpolated_data_set.xs(2018, level="Year", drop_level=False
 analysis_of_2018.style
 
 #%% [markdown]
-#### Stage 6.5 - Fill In Other Dimension?
+#### Stage 6.5 - Fill In Other Dimension Based On Mean?
 # Fill in by Region by Year based on mean?
+# Approach grabbed from stack overflow:
+# (https://stackoverflow.com/questions/19966018/pandas-filling-missing-values-by-mean-in-each-group)[https://stackoverflow.com/questions/19966018/pandas-filling-missing-values-by-mean-in-each-group]
+#
+# Unfortunately I ran out of time to implement this.  Generic equation dropped in below.
 
-
+#%%
+#df['value'] = df.groupby(['category', 'name'])['value'].transform(lambda x: x.fillna(x.mean()))
 
 #%% [markdown]
 #### Stage 6.6 - Write To File

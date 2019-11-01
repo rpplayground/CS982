@@ -29,9 +29,13 @@
 #
 
 #%%
+import sys
+sys.path
+
+#%%
 import numpy as np
 import pandas as pd
-import assignment1.data_wrangling_functions as dwf
+import data_wrangling_functions as dwf
 
 #%%
 github_path = "C:/Users/Barry/"
@@ -44,6 +48,10 @@ raw_worldbank_country_metadata = pd.read_csv(data_path + "world_bank_country_met
 #%%
 raw_worldbank_country_metadata.loc[raw_worldbank_country_metadata["Code"] == "PRK"]
 
+#%%
+raw_worldbank_data.head(10)
+
+
 #%% [markdown]
 #### Stage 1.2 - Trimming
 # This part of the process will:
@@ -55,6 +63,9 @@ raw_worldbank_data.tail(10)
 trimmed_worldbank_data = raw_worldbank_data.head(-5)
 #%%
 trimmed_worldbank_data.tail(10)
+
+#%%
+trimmed_worldbank_data.shape
 
 #%% [markdown]
 #### Stage 1.3 - Filtering
@@ -197,6 +208,9 @@ merged_data = merged_data.astype({"Year" : "int"})
 merged_data.head(10)
 
 #%%
+merged_data.tail(10)
+
+#%%
 merged_data.dtypes
 
 #%% [markdown]
@@ -209,11 +223,22 @@ merged_data.dtypes
 pivoted_worldbank_data = pd.pivot_table(merged_data, index=["Region", "Income Group", "Country", "Decade", "Year"], columns="Series Name", values="value")
 
 #%%
+# Rename super long column as it is a pain later in the process:
+pivoted_worldbank_data = pivoted_worldbank_data.rename(columns = { "Account ownership at a financial institution or with a mobile-money-service provider, young adults (% of population ages 15-24)" \
+ : "Account at financial institution (% of population ages 15-24)" })
+
+
+#%%
 pivoted_worldbank_data.shape
 #%%
 pivoted_worldbank_data.describe()
 #%%
 pivoted_worldbank_data.head(60)
+
+#%%
+pivoted_worldbank_data.tail(60)
+
+
 #%%
 pivoted_worldbank_data.dtypes
 
@@ -223,3 +248,6 @@ pivoted_worldbank_data.dtypes
 
 #%%
 pivoted_worldbank_data.to_pickle(data_path + "pivoted_worldbank_data.pkl")
+
+
+# %%

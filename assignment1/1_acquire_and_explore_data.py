@@ -114,7 +114,7 @@ raw_worldbank_data["Country Name"].value_counts()
 
 #%% [markdown]
 #### Conclusions Regarding Shape of Data
-# This structure is going to make life difficult for further analysis as we tent to have different data organised in discrete columns.
+# This structure is going to make life difficult for further analysis as we tend to have the variables organised in discrete columns.
 #
 # So added [item](https://trello.com/c/8w28nF2y) to the backlog is a need to re-structure this data such that:
 # - Country Column - categorical - the contry to which the data is related;

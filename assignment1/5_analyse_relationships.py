@@ -25,7 +25,8 @@ region_ranking = ["North America", "Europe & Central Asia", "Middle East & North
 region_palette = {"North America" : "red", "Europe & Central Asia" : "blue",\
     "Middle East & North Africa" : "pink", "Latin America & Caribbean" : "purple",\
         "East Asia & Pacific" : "green", "South Asia" : "orange", "Sub-Saharan Africa" : "gray"}
-
+income_palette = {"High income" : "red", "Upper middle income" : "orange",\
+    "Lower middle income" : "green", "Low income" : "blue"}
 
 #%% [markdown]
 ### Stage 7.1 - Read The File
@@ -44,7 +45,7 @@ interpolated_data_set["Log GDP per Capita"] = np.log10(interpolated_data_set["GD
 interpolated_data_set_flattened = interpolated_data_set.reset_index()
 
 interpolated_data_set_short_column_titles, list_of_columns = dwf.assign_short_variable_names(interpolated_data_set, 18)
-interpolated_data_set_short_column_titles = interpolated_data_set_short_column_titles.reset_index()
+interpolated_data_set_short_column_titles_flattened = interpolated_data_set_short_column_titles.reset_index()
 
 #%%
 mean_by_region_and_year = interpolated_data_set.groupby(level=["Region", "Year"]).mean().reset_index()
@@ -65,7 +66,7 @@ mean_by_country_and_decade.index.name = 'ID'
 analysis_of_2018 = interpolated_data_set.xs(2018, level="Year", drop_level=False)
 # Flatten the dataframe to open up all columns for access by the matplotlib and seaborn libraries.
 
-analysis_of_2018, list_of_columns = dwf.assign_short_variable_names(analysis_of_2018, 18)
+#analysis_of_2018, list_of_columns = dwf.assign_short_variable_names(analysis_of_2018, 18)
 
 analysis_of_2018_flattened = analysis_of_2018.reset_index()
 analysis_of_2018_flattened.index.name = 'ID'
@@ -104,8 +105,31 @@ sns.heatmap(correlation_matrix,\
     square=True, linewidths=.5, cbar_kws={"shrink": .5})
 
 #%%
-#from pandas.plotting import scatter_matrix
-#scatter_matrix(interpolated_data_set)
+interpolated_data_set_short_column_titles.columns
+
+#%%
+# Now flatten and pair down the data set ready for a pair plot:
+pruned_data = interpolated_data_set_short_column_titles.xs(1995, level="Year", drop_level=False).reset_index()
+pruned_data
+
+#%%
+pruned_data = pruned_data[['Income Group',\
+    'Life expectancy at..', 'Mortality rate, in..',\
+        'Renewable energy c..', 'Log GDP per Capita']]
+pruned_data = pruned_data.dropna()
+pruned_data
+
+#%%
+pruned_data["Income Group"].value_counts()
+
+#%%
+from pandas.plotting import scatter_matrix
+sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '--', 
+    'axes.titlesize' : 18, 'lines.linewidth' : 3, 'axes.labelsize' : 16, 'xtick.labelsize' : 16,\
+    'ytick.labelsize' : 16})
+chart = sns.pairplot(pruned_data, hue="Income Group", palette=income_palette)
+chart.fig.suptitle("Analysis of Variables With Strongest Correlations For Year 2018", y=1.02, fontsize=20)
+plt.savefig("pairplot.png", type="png")
 
 #%%
 min_power, min_value, max_power, max_value = dwf.find_min_and_max(analysis_of_2018_flattened, "GDP per capita (current US$)")

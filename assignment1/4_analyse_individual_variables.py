@@ -55,6 +55,9 @@ mean_by_region_and_year.index.name = 'ID'
 mean_by_country_and_decade = interpolated_data_set.groupby(level=["Region", "Country", "Decade"]).mean().reset_index()
 mean_by_country_and_decade.index.name = 'ID'
 
+#%%
+mean_by_country_and_decade[["Country", "Life expectancy at birth, total (years)"]].sort_values(by=["Country"])
+
 #%% [markdown]
 ### Stage 7.3 - Create "Slice" Of Data For 2018
 # In this section I will analyse data for 2018 in more depth with the purpose of generating some simple initial insights into the data.
@@ -97,13 +100,14 @@ analysis_of_2018_flattened.loc[:,["Country", "Region", "Life expectancy at birth
 #%%
 # Create a helper function for box plots of different columns by region.
 def region_box_plot(data_frame, x_column, plot_title, x_scale="linear"):
-    sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-',\
-        'axes.titlesize' : 24, 'axes.labelsize' : 16, 'xtick.labelsize' : 12, 'ytick.labelsize' : 12})
-    f, ax = plt.subplots(figsize=(8, 5))
+    sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
+    plt.rcParams.update({'axes.titlesize' : 18, 'lines.linewidth' : 1.5,\
+        'axes.labelsize' : 16, 'xtick.labelsize' : 16, 'ytick.labelsize' : 16})
+    f, ax = plt.subplots(figsize=(10, 6))
     ax.set(xscale=x_scale)
     #plt.title(plot_title)
     box_plot = sns.boxplot(x=x_column, y="Region", order=region_ranking, data=analysis_of_2018_flattened, palette=region_palette, ax=ax)
-    #box_plot.axes.set_title(plot_title,fontsize=18)
+    box_plot.axes.set_title(plot_title,fontsize=18)
     box_plot.set_xlabel(x_column,fontsize=14)
     box_plot.set_ylabel("Region",fontsize=14)
     box_plot.tick_params(labelsize=12)
@@ -126,12 +130,12 @@ analysis_of_2018_flattened.loc[:,["Country", "Region", "Life expectancy at birth
     .nsmallest(10, "Life expectancy at birth, total (years)")
 
 #%%
-haiti_data = interpolated_data_set_flattened.loc[interpolated_data_set_flattened["Country"] == "Haiti"]
-sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '--'})
-f, ax = plt.subplots(figsize=(10, 10))
-plt.title("Population of Haiti", fontdict = {"fontsize" : 20})
-sns.lineplot(x="Year", y="Population, total",\
-    color="gray", data=haiti_data, ax=ax)
+# haiti_data = interpolated_data_set_flattened.loc[interpolated_data_set_flattened["Country"] == "Haiti"]
+# sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '--'})
+# f, ax = plt.subplots(figsize=(10, 10))
+# plt.title("Population of Haiti", fontdict = {"fontsize" : 20})
+# sns.lineplot(x="Year", y="Population, total",\
+#     color="gray", data=haiti_data, ax=ax)
 
 
 #%% [mardown]
@@ -147,6 +151,8 @@ sns.lineplot(x="Year", y="Population, total",\
 #%%
 def region_line_plot(data_frame, y_column, plot_title, y_scale="linear"):
     sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-', })
+    plt.rcParams.update({'axes.titlesize' : 18, 'lines.linewidth' : 3,\
+        'axes.labelsize' : 16, 'xtick.labelsize' : 16, 'ytick.labelsize' : 16})
     f, ax = plt.subplots(figsize=(10, 10))
     ax.set(yscale=y_scale)
     plt.title(plot_title, fontdict = {"fontsize" : 20})
@@ -162,8 +168,10 @@ region_line_plot(mean_by_region_and_year, "Life expectancy at birth, total (year
 
 
 #%%
-sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
 f, ax = plt.subplots(figsize=(10, 10))
+sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
+plt.rcParams.update({'axes.titlesize' : 18, 'lines.linewidth' : 3,\
+    'axes.labelsize' : 16, 'xtick.labelsize' : 16, 'ytick.labelsize' : 16})
 plt.title("Development of Life Expectancy by Country\nby Decade since 1960", fontdict = {"fontsize" : 20})
 sns.swarmplot(x="Decade", y="Life expectancy at birth, total (years)", hue="Region",\
     palette=region_palette, data=mean_by_country_and_decade)
@@ -225,7 +233,7 @@ region_box_plot(analysis_of_2018_flattened, "GDP per capita (current US$)", "Dis
 #
 #%%
 region_line_plot(mean_by_region_and_year, "GDP per capita (current US$)",\
-    "Development of GDP Per Capita by Region\nby Year Since 1960", y_scale="linear")
+    "Development of GDP Per Capita by Region\nby Year Since 1960", y_scale="log")
 
 #%%
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
@@ -270,12 +278,27 @@ analysis_of_2018_flattened.loc[:,["Country", "Region", "Population growth (annua
 #%% [markdown]
 #### Population Growth 2018 - Bottom 10 Countries
 
+#%%#%%
+region_box_plot(analysis_of_2018_flattened, "Population growth (annual %)", "Distribution of Population Growth\n by Region In 2018", x_scale="linear")
+
+
 #%%
 analysis_of_2018_flattened.loc[:,["Country", "Region", "Population growth (annual %)"]]\
     .nsmallest(10, "Population growth (annual %)")
 
 #%%
-analysis_of_2018_flattened.loc[analysis_of_2018_flattened["Population growth (annual %)"] < 0]["Country"].count()
+analysis_of_2018_flattened.loc[analysis_of_2018_flattened["Population growth (annual %)"] < 0][["Region", "Country", "Population growth (annual %)"]]
+
+#%%
+#%%
+puertorico_data = interpolated_data_set_flattened.loc[interpolated_data_set_flattened["Country"] == "Puerto Rico"]
+sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '--'})
+plt.rcParams.update({'axes.titlesize' : 18, 'lines.linewidth' : 3,\
+    'axes.labelsize' : 16, 'xtick.labelsize' : 16, 'ytick.labelsize' : 16})
+f, ax = plt.subplots(figsize=(10, 3))
+plt.title("Population of Puerto Rico Since 1960", fontdict = {"fontsize" : 20})
+sns.lineplot(x="Year", y="Population, total",\
+     color="gray", data=puertorico_data, ax=ax)
 
 
 #%%
