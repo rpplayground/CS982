@@ -38,24 +38,24 @@ def add_annotation(ax, row, x_column, y_column, label_column, offset_x, offset_y
     print("Adding annotation:")
     print(row)
     print(x_column, y_column, offset_x, offset_y)
-    offset = 50
+    offset = 100
     ax.annotate(\
         s = row[label_column],\
         xy = (row[x_column], row[y_column]),\
         xytext = (offset_x * offset, offset_y * offset),\
         bbox = dict(boxstyle="round", fc="0.8"),\
-        arrowprops = dict(width = 2),\
+        arrowprops = dict(arrowstyle = '->', color='grey', lw=1.5, ls='--'),\
         textcoords = 'offset pixels')
 
 def look_up_offsets(offset_label):
     offset_lookup = dict(\
-        OC = (0,1),\
-        TR = (1,1),\
-        QP = (1,0),\
-        BR = (1,-1),\
-        HP = (0,-1),\
+        OC = (0,0.7),\
+        TR = (0.7,0.7),\
+        QP = (0.5,0),\
+        BR = (0.7,-1),\
+        HP = (0,-0.7),\
         BL = (-1, -1),\
-        QT = (-1,0),\
+        QT = (-1.2,0),\
         TL = (-1,1))
     offset_tuple = offset_lookup[offset_label]
     return offset_tuple[0], offset_tuple[1]
@@ -64,10 +64,9 @@ def plot_points_of_interest(data_frame, points_of_interest, x_column, y_column, 
     trimmed_data_frame = data_frame.loc[:, [x_column, y_column, size_column, label_column]].dropna()
     for point_of_interest in points_of_interest:
         offset_x, offset_y = look_up_offsets(point_of_interest[1])
-        row = trimmed_data_frame.loc[trimmed_data_frame[label_column] == point_of_interest[0]]
-        print(row)
-        add_annotation(ax, row, x_column, y_column, label_column, offset_x, offset_y)
-
+        row = trimmed_data_frame.loc[trimmed_data_frame[label_column] == point_of_interest[0]].squeeze()
+        if len(row) > 0:
+            add_annotation(ax, row, x_column, y_column, label_column, offset_x, offset_y)
 
 def label_max_and_mins(data_frame, x_column, y_column, size_column, label_column, ax):
     trimmed_data_frame = data_frame.loc[:, [x_column, y_column, size_column, label_column]].dropna()
