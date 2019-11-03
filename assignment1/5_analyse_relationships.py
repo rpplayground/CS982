@@ -121,7 +121,6 @@ chart.fig.suptitle("Analysis of Variables With Strongest Correlations For Year 2
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '--', 
     'axes.titlesize' : 18, 'lines.linewidth' : 3, 'axes.labelsize' : 16, 'xtick.labelsize' : 16,\
     'ytick.labelsize' : 16})
-sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
 chart = sns.lmplot(x='Log GDP per Capita', y='Life expectancy at..',\
     height=8, data=data_for_pair_plot)
 chart.fig.suptitle("Analysis of Correlation Between\nLog GDP and Life Expectancy", y=1.02, fontsize=20)
