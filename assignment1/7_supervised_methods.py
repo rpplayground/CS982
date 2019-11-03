@@ -39,15 +39,8 @@ github_path = "C:/Users/Barry/"
 data_path = github_path + "GitHub/CS982/assignment1/"
 interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 #%% [markdown]
-# This step was added retrospectively, because inspection of the data shows that we will be required to work with "Log GDP" in order to generate more meaningful analysis.
-
-#%%
-analysis_of_decade = interpolated_data_set.xs("1990s", level="Decade", drop_level=False)
-analysis_of_decade = analysis_of_decade.groupby(level=["Region", "Income Group", "Country", "Decade"]).\
-    mean().reset_index()
-
-#%%
-analysis_of_decade
+# Adding "Log GDP" in order to generate more meaningful analysis.
+interpolated_data_set["Log GDP per Capita"] = np.log10(interpolated_data_set["GDP per capita (current US$)"])
 
 #%%
 target_column = 'Life expectancy at birth, total (years)'
@@ -58,26 +51,26 @@ feature_columns = [ \
     #'Energy use (kg of oil equivalent per capita)',\
     #'Fossil fuel energy consumption (% of total)',\
     'Immunization, DPT (% of children ages 12-23 months)',\
-    'Inflation, consumer prices (annual %)',\
+    #'Inflation, consumer prices (annual %)',\
     #'Market capitalization of listed domestic companies (current US$)',\
-    'Merchandise exports (current US$)',\
-    'Mobile cellular subscriptions (per 100 people)',\
-    'Mortality caused by road traffic injury (per 100,000 people)',\
+    #'Merchandise exports (current US$)',\
+    #'Mobile cellular subscriptions (per 100 people)',\
+    #'Mortality caused by road traffic injury (per 100,000 people)',\
     #'Mortality rate attributed to household and ambient air pollution, age-standardized (per 100,000 population)',\
     #'Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (per 100,000 population)',\
     'Mortality rate, infant (per 1,000 live births)',\
-    'Population density (people per sq. km of land area)',\
-    'Population growth (annual %)', 'Population, total',\
+    #'Population density (people per sq. km of land area)',\
+    #'Population growth (annual %)', 'Population, total',\
     #'Power outages in firms in a typical month (number)',\
     'Renewable energy consumption (% of total final energy consumption)',\
-    'Suicide mortality rate (per 100,000 population)',\
+    #'Suicide mortality rate (per 100,000 population)',\
     #'Tax revenue (% of GDP)', 'Urban population growth (annual %)',\
     'Log GDP per Capita']
 
 #%%
 # Helper function to extract cross section of data based on year
 def grab_year(data_frame, year):
-    single_year_data_frame = interpolated_data_set.xs(year, level="Year", drop_level=False)
+    single_year_data_frame = data_frame.xs(year, level="Year", drop_level=False)
     return single_year_data_frame
 
 single_year_data_frame = grab_year(interpolated_data_set, 2015)
