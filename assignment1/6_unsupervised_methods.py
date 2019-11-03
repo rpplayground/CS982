@@ -147,10 +147,61 @@ agglomerative_paramter_analysis
 agglomerative_paramter_analysis.to_csv("./assignment1/agglomerative_paramter_analysis.csv")
 
 #%% [markdown]
+### Stage X.X - K Means
+# Useful documentation from Scikit Learn web site:
+# [https://scikit-learn.org/stable/modules/clustering.html#k-means] (https://scikit-learn.org/stable/modules/clustering.html#k-means)
+# 
+# The objective here is to iterative through a range of target clusters for the K-means algorithm to assess how it performs.
+
+#%%
+def run_k_means_model(X, Y, max_number_of_clusters):
+    results_dataframe = pd.DataFrame([])
+    for k_means_number_of_clusters in range(2, max_number_of_clusters+1):
+        # Configure the model
+        kmeans_model = cluster.KMeans(n_clusters=k_means_number_of_clusters)
+        # Run the model
+        kmeans_model.fit(X)
+        # Score the model
+        silhouette_score = metrics.silhouette_score(X, kmeans_model.labels_)
+        completeness_score = metrics.completeness_score(Y, kmeans_model.labels_)
+        homogeneity_score = metrics.homogeneity_score(Y, kmeans_model.labels_)
+        # Print the results
+        # print("Number of clusters: {}, Silhouette: {:0.3f}, Completeness: {:0.3f}, Homogeneity: {:0.3f}".\
+        # format(k_means_number_of_clusters, silhouette_score, completeness_score, homogeneity_score))
+        # Capture the results
+        results_dataframe = results_dataframe.append({"k_means_number_of_clusters" : k_means_number_of_clusters,\
+        "silhouette_score" : silhouette_score, "completeness_score" : completeness_score, "homogeneity_score" : homogeneity_score}, ignore_index=True)
+    return results_dataframe
+
+#%%
+kmeans_parameter_analysis = run_k_means_model(X, Y, 10)
+kmeans_parameter_analysis = kmeans_parameter_analysis.set_index("k_means_number_of_clusters")
+kmeans_parameter_analysis
+
+#%%
+score_palette = {"completeness_score": "blue", "silhouette_score": "green", "homogeneity_score": "purple"}
+sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-', })
+plt.rcParams.update({'axes.titlesize' : 18, 'lines.linewidth' : 3,\
+    'axes.labelsize' : 16, 'xtick.labelsize' : 16, 'ytick.labelsize' : 16})
+f, ax = plt.subplots(figsize=(10, 6))
+plt.title("Analysis of K-Means Permance\nAs Number of Clusters Is Increased From 2 to 10", fontdict = {"fontsize" : 20})
+sns.lineplot(linewidth=3,\
+    palette=score_palette,\
+    data=kmeans_parameter_analysis, ax=ax)
+
+#chart =  sns.lineplot(x="k_means_number_of_clusters", palette=score_palette, ax=ax)
+#chart.axes.set_title("Analysis of K-Means Permance\nAs Number of Clusters Is Increased From 2 to 10",fontsize=20)
+
+#%%
+kmeans_parameter_analysis.to_csv("./assignment1/kmeans_parameter_analysis.csv")
+
+
+
+#%% [markdown]
 ### Stage X.X Run Agglomerative Clustering With Optimal Parameters 
 # The best combination being:
-# - X
-# - Y
+# - Affinity = Euclidean
+# - Linkage = Ward
 #
 
 #%%
@@ -240,7 +291,7 @@ def plot_clusters(dataframe, title, x_column, y_column, hue_column, hue_palette)
     sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '--', 
         'axes.titlesize' : 18, 'lines.linewidth' : 1, 'axes.labelsize' : 18, 'xtick.labelsize' : 16,\
         'ytick.labelsize' : 16})
-    f, ax = plt.subplots(figsize=(10, 10))
+    f, ax = plt.subplots(figsize=(10, 6))
     chart = sns.scatterplot(x = x_column, y = y_column,\
         hue = hue_column,\
         palette = hue_palette,\
@@ -248,10 +299,10 @@ def plot_clusters(dataframe, title, x_column, y_column, hue_column, hue_palette)
         alpha = 0.8,\
         linewidth = 0,\
         data=dataframe, ax = ax)
-    chart.axes.set_title(title,fontsize=20)
+    chart.axes.set_title(title,fontsize=18)
 
 #%%
-plot_clusters(analysis_of_decade_nulls_removed, "Plot of Log GDP Per Capita and Life Expectancy\n For Each Country - Average For 1990s:\nShowing \"Known Truth\" (Income Group) Labels", "Log GDP per Capita",\
+plot_clusters(analysis_of_decade_nulls_removed, "Plot of Log GDP Per Capita and Life Expectancy\n For Each Country - Average For 1990s:\nShowing \"Ground Truth\" (Income Group) Labels", "Log GDP per Capita",\
     "Life expectancy at birth, total (years)", "Income Group", income_group_palette)
 
 #%%
@@ -285,40 +336,6 @@ labels[0]
 X
 
 
-
-#%% [markdown]
-### Stage 6.3 - K Means
-# Useful documentation from Scikit Learn web site:
-# [https://scikit-learn.org/stable/modules/clustering.html#k-means] (https://scikit-learn.org/stable/modules/clustering.html#k-means)
-# 
-# Documentation for the 
-
-#%%
-def run_k_means_model(X, Y, max_number_of_clusters):
-    results_dataframe = pd.DataFrame([])
-    for k_means_number_of_clusters in range(2, max_number_of_clusters+1):
-        # Configure the model
-        kmeans_model = cluster.KMeans(n_clusters=k_means_number_of_clusters)
-        # Run the model
-        kmeans_model.fit(X)
-        # Score the model
-        silhouette_score = metrics.silhouette_score(X, kmeans_model.labels_)
-        completeness_score = metrics.completeness_score(Y, kmeans_model.labels_)
-        homogeneity_score = metrics.homogeneity_score(Y, kmeans_model.labels_)
-        # Print the results
-        # print("Number of clusters: {}, Silhouette: {:0.3f}, Completeness: {:0.3f}, Homogeneity: {:0.3f}".\
-        # format(k_means_number_of_clusters, silhouette_score, completeness_score, homogeneity_score))
-        # Capture the results
-        results_dataframe = results_dataframe.append({"k_means_number_of_clusters" : k_means_number_of_clusters,\
-        "silhouette_score" : silhouette_score, "completeness_score" : completeness_score, "homogeneity_score" : homogeneity_score}, ignore_index=True)
-    return results_dataframe
-
-#%%
-kmeans_parameter_analysis = run_k_means_model(X, Y, 10)
-kmeans_parameter_analysis
-
-#%%
-kmeans_parameter_analysis.to_csv("./assignment1/kmeans_parameter_analysis.csv")
 
 #%% [markdown]
 ### Principle Components Analysis

@@ -35,7 +35,7 @@ sys.path
 #%%
 import numpy as np
 import pandas as pd
-import data_wrangling_functions as dwf
+import assignment1.data_wrangling_functions as dwf
 
 #%%
 github_path = "C:/Users/Barry/"
