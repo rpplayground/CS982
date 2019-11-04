@@ -6,7 +6,7 @@
 #
 #File Created first created Xth October 2019 by Barry Smart.
 # 
-## Stage X - Application of Unsupervised Methods
+## Stage 8 - Application of Unsupervised Methods
 #The purpose of this notebook is to run a range of unsupervised models on the data.
 #The objective is to determine how successfully clustering models can be used to label given the *ground truth* of *Income GrouP*.
 #
@@ -28,16 +28,15 @@ from sklearn import cluster
 from sklearn.preprocessing import scale
 from sklearn.preprocessing import LabelEncoder
 from scipy.cluster.hierarchy import dendrogram, linkage
-from sklearn.decomposition import PCA
 
 
 #%% [markdown]
-### Stage 6.1 - Read in the Data and Prepare it for Analysis
+### Stage 8.1 - Read in the Data and Prepare it for Analysis
 # Read in the file that was generated from the warngling and cleaning scripts.
 
 #%%
-github_path = "C:/Users/Barry/"
-#github_path = "C:/Users/cgb19156.DS/"
+#github_path = "C:/Users/Barry/"
+github_path = "C:/Users/cgb19156/"
 data_path = github_path + "GitHub/CS982/assignment1/"
 interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 #%% [markdown]
@@ -47,7 +46,7 @@ interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 interpolated_data_set["Log GDP per Capita"] = np.log10(interpolated_data_set["GDP per capita (current US$)"])
 
 #%% [markdown]
-### Stage X.X - Prepare Data For Model
+### Stage 8.2 - Prepare Data For Models
 # Analysis will be carried out based on the average for each country within a specific decade - the logic being that this will enable fluctuations within that decade to be generalised using the mean.
 # Based on the analysis of correlations between variables, reduce the number of variables that will be passed to the model.
 #
@@ -83,7 +82,8 @@ dataset_variables = analysis_of_decade_nulls_removed.iloc[:, 1:]
 dataset_variables.describe()
 
 #%% [markdown]
-# 4. Scale the data that we are going to use for clustering
+### Stage 8.3 - Establish The Variables (X)
+
 #%%
 X = scale(dataset_variables)
 X
@@ -91,6 +91,9 @@ X
 #%%
 n_samples, n_features = X.shape
 print("n_samples: " + str(n_samples) + " - n_features: " + str(n_features))
+
+#%% [markdown]
+### Stage 8.3 - Establish The Ground Truth (Y)
 
 #%%
 target_number_of_clusters = len(np.unique(ground_truth))
@@ -100,8 +103,8 @@ target_number_of_clusters
 Y = LabelEncoder().fit_transform(ground_truth)
 Y
 
-
-### Stage 6.2 - Agglomerative Model
+#%% [markdown]
+### Stage 8.4 - Agglomerative Model
 # Really useful documentation about this model in the [SciKit Learn web site](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html#sklearn.cluster.AgglomerativeClustering)
 #
 # "Recursively merges the pair of clusters that minimally increases a given linkage distance."
@@ -112,7 +115,6 @@ Y
 #
 # Explore the of different distance and affinity measures on the silhouette score, homogeneity and completeness, based on passing different parameters to the Agglomerative clustering algorithm.
 # Options available at http://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html
-
 
 #%%
 def run_agglomerative_model(X, Y, target_number_of_clusters):
@@ -137,17 +139,16 @@ def run_agglomerative_model(X, Y, target_number_of_clusters):
                     "Silhouette" : silhouette_score, "Completeness" : completeness_score, "Homogeneity" : homogeneity_score}, ignore_index=True)
     return results_dataframe
     
-
 #%%
 agglomerative_paramter_analysis = run_agglomerative_model(X, Y, target_number_of_clusters)
 agglomerative_paramter_analysis
 
 #%%
-# Save data frame to CSV so that it can be 
+# Save data frame to CSV so that it can be imported into document.
 agglomerative_paramter_analysis.to_csv("./assignment1/agglomerative_paramter_analysis.csv")
 
 #%% [markdown]
-### Stage X.X - K Means
+### Stage 8.5 - K Means
 # Useful documentation from Scikit Learn web site:
 # [https://scikit-learn.org/stable/modules/clustering.html#k-means] (https://scikit-learn.org/stable/modules/clustering.html#k-means)
 # 
@@ -189,16 +190,12 @@ sns.lineplot(linewidth=3,\
     palette=score_palette,\
     data=kmeans_parameter_analysis, ax=ax)
 
-#chart =  sns.lineplot(x="k_means_number_of_clusters", palette=score_palette, ax=ax)
-#chart.axes.set_title("Analysis of K-Means Permance\nAs Number of Clusters Is Increased From 2 to 10",fontsize=20)
-
 #%%
+# Save results to file so that it can be imported into document.
 kmeans_parameter_analysis.to_csv("./assignment1/kmeans_parameter_analysis.csv")
 
-
-
 #%% [markdown]
-### Stage X.X Run Agglomerative Clustering With Optimal Parameters 
+### Stage 8.6 Run Agglomerative Clustering With Optimal Parameters 
 # The best combination being:
 # - Affinity = Euclidean
 # - Linkage = Ward
@@ -251,6 +248,11 @@ metrics.completeness_score(Y, model.labels_)
 
 #%%
 metrics.homogeneity_score(Y, model.labels_)
+
+#%% [markdown]
+### Stage 8.7 Visualise Results Of Agglomerative Clustering
+# Visualise how the aggromerative model has performed when compared to the "ground truth" labels.
+#
 
 #%%
 # Splice the labels assigned by the Agglomerative cluster back onto the original data set:
@@ -316,7 +318,9 @@ plot_clusters(analysis_of_decade_nulls_removed, "Plot Showing Differences Betwee
         "label_diff", diff_palette)
 
 #%% [markdown]
-### Dendogram
+### Stage 8.8 Generate a Dendrogram
+# Visualise how the aggromerative model has been contructed from the ground up.
+#
 
 #%%
 linkage_model = linkage(X, 'ward')
@@ -346,5 +350,29 @@ X
 # My plan here is to apply a PCA to my data by asking it to fit to a decreasing number of components.
 # I will be passing D variables, and intially ask it to fit to D-1 components.
 # Then I will step this down to 1 and plot the results.
+# 
+# Documentation:
+# (https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html)[https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html]
+#
+# This is also interesting:
+# (http://setosa.io/ev/eigenvectors-and-eigenvalues/)[http://setosa.io/ev/eigenvectors-and-eigenvalues/]
+#%%
+from sklearn.decomposition import PCA
 
 #%%
+pca = PCA()
+
+#%%
+pca = pca.fit(X)
+plt.plot(np.cumsum(pca.explained_variance_ratio_))
+
+#%%
+pca.explained_variance_ratio_
+
+#%%
+pca.explained_variance_
+
+#%%
+pca.components_
+
+

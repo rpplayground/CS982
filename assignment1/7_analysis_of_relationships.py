@@ -5,7 +5,7 @@
 #
 #File Created first created 9th October 2019 by Barry Smart.
 # 
-## Stage 8 - Analysis Of Core Data Series
+## Stage 7 - Analysis Of Core Data Series
 #The purpose of this notebook is to do analysis of the core data items that are of interest:
 #- Life expectancy;
 #- Economic prosperity;
@@ -126,7 +126,7 @@ chart = sns.lmplot(x='Log GDP per Capita', y='Life expectancy at..',\
 chart.fig.suptitle("Analysis of Correlation Between\nLog GDP and Life Expectancy", y=1.02, fontsize=20)
 
 #%% [mardown]
-### Stage 7.4 - Correlation Between Log GDP and Life Expectancy
+### Stage 7.5 - Correlation Between Log GDP and Life Expectancy
 #
 
 #%%
@@ -185,6 +185,10 @@ data_for_hans_rosling_scatter_2018 = get_data_for_year(interpolated_data_set, 20
 data_for_hans_rosling_scatter_2018
 
 
+#%% [mardown]
+#### Hans Rosling Inspired Scatter Plot 1960
+#
+
 #%%
 # Going to set the max and min for the X axis (GDP) based on the entire data set of 59 years to show how it has moved
 min_power, min_value, max_power, max_value = dwf.find_min_and_max(interpolated_data_set_flattened, "GDP per capita (current US$)")
@@ -213,14 +217,16 @@ gdp_league_table_1960.head(10)
 #%%
 gdp_league_table_1960.tail(10)
 
+#%% [mardown]
+#### Hans Rosling Inspired Scatter Plot 2018
+#
+
 #%%
 country_scatterplot(data_for_hans_rosling_scatter_2018, "Hans Rosling Inspired Scatter Plot\nCountry Data Across 4 Dimensions In The Year 2018:\nGDP, Life Expectancy, Region and Population",\
     "GDP per capita (current US$)", "Life expectancy at birth, total (years)", "Region", "Population, total",\
         min_value, max_value, x_scale="log",\
             points_of_interest=[("India", "QT"), ("United Kingdom", "QT"), ("Haiti", "QT"), ("Norway", "QT"), ("Central African Republic", "QP"), ("San Marino", "QT"), ("Burundi", "QT"), ("China", "QP"), ("United States", "QT"), ("Afghanistan", "QP"), ("Liechtenstein", "HP"), ("Indonesia", "QT"), ("Brazil", "QT"), ("Turkey", "QT"), ("Japan", "QT"), ("Sierra Leone", "QT")],\
                 label_maxs_and_mins=False)
-
-
 
 #%%
 life_expectancy_league_table_2018 = data_for_hans_rosling_scatter_2018[["Region", "Country", "Life expectancy at birth, total (years)", "GDP per capita (current US$)"]].sort_values(by="Life expectancy at birth, total (years)").dropna()
@@ -231,7 +237,6 @@ life_expectancy_league_table_2018.head(10)
 #%%
 life_expectancy_league_table_2018.tail(10)
 
-
 #%%
 gdp_league_table_2018 = data_for_hans_rosling_scatter_2018[["Region", "Country", "Life expectancy at birth, total (years)", "GDP per capita (current US$)"]].sort_values(by="GDP per capita (current US$)").dropna()
 
@@ -240,5 +245,3 @@ gdp_league_table_2018.head(10)
 #%%
 gdp_league_table_2018.tail(10)
 
-
-# %%

@@ -4,40 +4,9 @@
 ## Assignment 1 - Exploring Data
 # File Created first created 9th October 2019 by Barry Smart.
 # 
-### Part 1 - Choice Of Dataset
-# I've chosen to load country level data from the World Bank to explore world development indicators such as:
-# - Economic indicators such as Gross Development Product (GDP)
-# - Population and mortallity rates
-#
-### Part 2 - Objectives
-# The obejctives I would like to achieve:
-# 1. Wrangle the data into a more effective shape for analysis
-# 2. Use simple techniques to fill in the gaps within the data
-# 3. Application of science to show correlation between economic prosperity and life expectancy
-# 4. Use of predictive analysis to forward project point at which world population plateaus based on some broad assumptions
-# 5. Use of simple visuals to enable compelling story telling 
-# 
-### Part 3 - Sourcing the Data
-# Instructions about how I sourced the data.
-# Notes about licensing.
-#
-
-### Part 4 - Pre-requisites
-# The environment I have chose to use to complete this assignment is as follows:
-# - Visual Studio Code - Microsoft's free and open source integrated development environment
-# - Python - as thew core development environment - extended with a number of core libraries : numpy, pandas XXX
-# - Jupyter Notebooks - used to orchestrate the process that I've followed to take the data through the end to end value chain
-# - Markdown - use of markdown as the means of generating integrated notes within the Jupyter notebooks
-# - PyTest - used for running unit tests on any bespoke functions developed to support this project
-
-
 #%% [markdown]
-### Part 4 - Load and Have A First Look At The Data
-# First stage is to load the raw data and have an initial look at it.
-
-#%% [markdown]
-#### Import The Data
-# First step is to import the relevant libraries, read the data from file and have a look at the first 10 rows...
+### Stage 3 - Initial Exporation
+# This stage is concerned with loading  the raw data and have an initial look at it to identify data wrangling steps.
 
 #%%
 # I am going to make use of the common numpy and pandas libraries to load, wrangle and perform basic analysis of the data
@@ -45,37 +14,33 @@ import numpy as np
 import pandas as pd
 import assignment1.data_wrangling_functions as dwf
 
+
+#%% [markdown]
+#### Stage 3.1 - Import The Data
+# First step is to read the data from file and have a look at the first 10 rows...
+
 #%%
 # Read the raw World Bank data from the CSV file
-
 github_path = "C:/Users/Barry/"
 #github_path = "C:/Users/cgb19156/"
-
 data_path = github_path + "GitHub/CS982/assignment1/"
-
 raw_worldbank_data = pd.read_csv(data_path + "world_bank_data.csv")
-# raw_worldbank_data = pd.read_csv("C:/Users/Barry/Documents/GitHub/CS982/assignment1/world_bank_data.csv")
-# C:\Users\cgb19156\github\CS982\assignment1\world_bank_data.csv
 # Have a look at the first 10 rows
 raw_worldbank_data.head(10)
 
 #%% [markdown]
-#### Initial Observations Of File Format
 # The data is structured with repeating rows of data, where each row is governed by:
 # - The "Series Name" (a "Series Code" is also provided) - an example being "Population, total"
 # - The "Country Name" - (a "Country Code" is also provided) - an example being "Argentina"
 # There are then columns for each of the years from 1960 to 2018.
-#
-#### Closer Look At Shape and Structure
+
+#### Stage 3.2 - Closer Look At Shape and Structure : Series Name
 # Next step is to take closer look at the shape and structure of the data.
-# First run some basic statistics about number of rows and columns:
+# First run some basic statistics about number of rows and columns.
+# In particular, analyse the "Series Name" column to determine how many discrete data series are available.
 
 #%%
 raw_worldbank_data.shape
-
-#%% [markdown]
-#### Analyse "Series Name"
-# Look at more depth at the "Series Name" column to understand how many discrete data series are available:
 
 #%%
 raw_worldbank_data["Series Name"].value_counts().head(20)
@@ -91,7 +56,7 @@ raw_worldbank_data.tail(10)
 #
 # There are trailing rows at the end of the data set that need to be removed - added [item](https://trello.com/c/P6isPTdY) to backlog.
 # 
-# I also need to select the subset of "Series Name" categories that I want to work with.  There are 46 this list which is too many!
+# I also need to select the subset of "Series Name" categories that I want to work with.  There are too many!
 #  On this basis, I have added a backlog [item](https://trello.com/c/bPYXSpNU) to filter to the following "Series":
 # - Population, total
 # - GDP (current US$)
@@ -106,8 +71,8 @@ raw_worldbank_data.tail(10)
 # - Mobile cellular subscriptions (per 100 people)
 
 #%% [markdown]
-#### Analyse "Country Name"
-# Look at more depth at the country data to understand how many countries we have data for
+#### Stage 3.2 - Closer Look At Shape and Structure : Country Name
+# Look at more depth at the country data to understand how many countries we have data for.
 
 #%%
 raw_worldbank_data["Country Name"].value_counts()
@@ -175,5 +140,3 @@ thin_slice["1960 [YR1960]"].describe()
 # 1. Addition of country meta data - backlog [item](https://trello.com/c/gQOicDsM) - eg categorical data for region / continent to allow high order analysis
 # 2. Integration of other data sets - backlog [item](https://trello.com/c/EG2lMu3x) - eg from the WHO?
 # 
-
-#%%

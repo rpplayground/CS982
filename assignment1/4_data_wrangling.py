@@ -4,7 +4,7 @@
 ## Assignment 1 - Exploring Data
 # File Created first created 9th October 2019 by Barry Smart.
 # 
-### Stage 1 - Wrangle Data
+### Stage 4 - Data Wrangling
 # The purpose of this notebook is to orchestrate the process of wanrgling the data.
 # This has been tackled by completing each of the backlog items classed as "Data Wrangling" and placing them into a logica sequence in the notebook:
 # 
@@ -14,15 +14,18 @@
 # 4. Process Blank Cells
 # 5. Unpivoting
 # 6. Add Country Netadata
-# 7. Pivoting
-# 8. Write To File
+# 7. Add Decade Label
+# 8. Pivoting
+# 9. Write To File
 # 
 #### Design Decisions
-# - The notebook is structured such that it can be run end to end any time a new data cut becomes available to transform the raw data into a format for downstream analysis.
+# - The notebook is structured such that it can be run end to end any time a new data cut becomes available to transform the raw data into a consistent format for downstream analysis.
 # - Any heavy blocks of code have been written as functions in a seperate "data_wrangling_functions.py" Python file and imported into this notebook.
+# - The introduction of multi-indexing is extremely useful for downstream processing.
+# - Other fundamental processing of data to support downstream analysis has been "retrofitted" to this stage of the process, so we do not need to keep repeating elsewhere and can do it once and re-use it accordingly - eg setting up a "Decade" column.
 #
-#### Stage 1.1 - Ingest Data
-# First stage is to load the raw data from CSV file as generated from the World Bank's [open data portal](https://databank.worldbank.org/home.aspx).
+#### Stage 4.1 - Ingest Data
+# First stage is to load the raw data from CSV files as generated from the World Bank's [open data portal](https://databank.worldbank.org/).
 # Two files are of interest:
 # - The larger file containing "world development indicators" organised by country and year.
 # - A smaller "coutry metadata" file containing classifications for each coutry such as region and income group.
@@ -53,7 +56,7 @@ raw_worldbank_data.head(10)
 
 
 #%% [markdown]
-#### Stage 1.2 - Trimming
+#### Stage 4.2 - Trimming
 # This part of the process will:
 # - Trim the last 5 rows from the data set as they do not contain data (could be considered redundant given next step below);
 #
@@ -68,7 +71,7 @@ trimmed_worldbank_data.tail(10)
 trimmed_worldbank_data.shape
 
 #%% [markdown]
-#### Stage 1.3 - Filtering
+#### Stage 4.3 - Filtering
 # This part of the process will:
 # - Filter down to the set of "Series Name" that I am interested in analysing.
 #
@@ -128,14 +131,14 @@ filtered_worldbank_data = trimmed_worldbank_data.loc[trimmed_worldbank_data['Ser
 filtered_worldbank_data["Series Name"].value_counts()
 
 #%% [markdown]
-#### Stage 1.4 - Process Blank Cells
+#### Stage 4.4 - Process Blank Cells
 # One simple step is required at this stage to clean up the cells that to contain no data : that is to replace the instances of ".." with NaN.
 #
 #%%
 cleansed_world_data = filtered_worldbank_data.replace(to_replace='..', value=np.nan)
 
 #%% [markdown]
-#### Stage 1.5 - Unpivoting
+#### Stage 4.5 - Unpivoting
 # This part of the process will:
 # - Rename the year columns - a pre-quisite to support the next step;
 # - Unpivot the data such that the individual year columns are collapsed into single column to achieve a "thin and tall" data structure;
@@ -158,7 +161,7 @@ reshaped_worldbank_data.head(5)
 
 
 #%% [markdown]
-#### Stage 1.6 - Create Country Metadata
+#### Stage 4.6 - Add Country Metadata
 # Here we prepare the World Bank country metadata
 
 #%%
@@ -174,16 +177,13 @@ country_metadata = country_metadata.rename(columns = { "Short Name" : "Country"}
 country_metadata.head(10)
 
 #%% [markdown]
-#### "Countries" that have empty Region and Income Group data...
-# This next step is important as these "dummy countries" will ultimately be dropped from the data when the pivot stage is applied below.
+# There are a number of "dummy" countries that have empty Region and Income Group data - these will ultimately be dropped from the data when the pivot stage is applied below.
 
 # %%
 country_metadata.loc[pd.isnull(country_metadata["Region"])]
 
-
 #%% [markdown]
-#### Stage 1.7 - Merge Country Metadata Into Main Data Set
-# Here we will extend the World Bank data with country metadata (Region, Income Group).
+# Here we will extend the World Bank data with country metadata (Region, Income Group) by merging the two data sets.
 
 #%%
 merged_data = reshaped_worldbank_data.merge(country_metadata, left_on="Country Code", right_on="Code")
@@ -195,7 +195,7 @@ merged_data.head(10)
 merged_data["Country Name"].value_counts()
 
 #%% [markdown]
-#### Stage 1.8 - Time Dimension
+#### Stage 1.7 - Add Decade Label
 # Here we process the Year colun to create a useful Decade column and convert Year from a string into an integer.
 
 #%%
@@ -214,7 +214,7 @@ merged_data.tail(10)
 merged_data.dtypes
 
 #%% [markdown]
-#### Stage 1.6 - Pivoting
+#### Stage 1.8 - Pivoting
 # This part of the process will:
 # 1. Pivot the data such that the individual series data are each placed into their own columns to achieve a "fatter and less tall" data stucture;
 # 2. In doing so, create a useful multi-index that can be used to slice and group data later in the process.
@@ -227,7 +227,6 @@ pivoted_worldbank_data = pd.pivot_table(merged_data, index=["Region", "Income Gr
 pivoted_worldbank_data = pivoted_worldbank_data.rename(columns = { "Account ownership at a financial institution or with a mobile-money-service provider, young adults (% of population ages 15-24)" \
  : "Account at financial institution (% of population ages 15-24)" })
 
-
 #%%
 pivoted_worldbank_data.shape
 #%%
@@ -238,16 +237,12 @@ pivoted_worldbank_data.head(60)
 #%%
 pivoted_worldbank_data.tail(60)
 
-
 #%%
 pivoted_worldbank_data.dtypes
 
 #%% [markdown]
-#### Stage 1.8 - Write To File
+#### Stage 1.9 - Write To File
 # Now we write the resulting data frame to the Pickle file format to preserve all meta data.
 
 #%%
 pivoted_worldbank_data.to_pickle(data_path + "pivoted_worldbank_data.pkl")
-
-
-# %%

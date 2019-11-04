@@ -4,11 +4,11 @@
 ## Assignment 1 - Exploring Data
 # File Created first created 9th October 2019 by Barry Smart.
 # 
-### Stage 6 - Clean Up Data
-# The purpose of this notebook is to do some basic cleaning of the data.
+### Stage 5 - Address Gaps In The Data
+# The purpose of this notebook is to address some of the gaps in the data.
 #
 #### Design Decisions
-# - Linear extrapolation
+# - Linear extrapolation was used to 
 #
 
 #%%
@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import scipy
 
 #%% [markdown]
-#### Stage 6.1 - Read The File
+#### Stage 5.1 - Read The File
 # Read in the file that was generated from the previous script.
 
 #%%
@@ -36,11 +36,18 @@ pivoted_worldbank_data.shape
 pivoted_worldbank_data.reset_index()["Country"].value_counts()
 
 #%% [markdown]
-#### Stage 6.2 - Fill In The Missing Data
+#### Stage 5.2 - Fill In The Missing Data
 # Fill in the blanks *only forwards* using linear interpolation.
 # For each country in the Year dimension.
 # The following documentation was used:
 # (https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.interpolate.html)[https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.interpolate.html]
+# 
+# Approach from stack overflow also useful:
+# (https://stackoverflow.com/questions/19966018/pandas-filling-missing-values-by-mean-in-each-group)[https://stackoverflow.com/questions/19966018/pandas-filling-missing-values-by-mean-in-each-group]
+#
+# Generic form:
+# df['value'] = df.groupby(['category', 'name'])['value'].transform(lambda x: x.fillna(x.mean()))
+
 
 #%%
 interpolated_data_set = pivoted_worldbank_data.groupby(level="Country").apply(lambda group: group.interpolate(method='linear', limit_direction='forward', limit=60))
@@ -51,7 +58,7 @@ pivoted_worldbank_data.isnull().sum(axis = 0) - interpolated_data_set.isnull().s
 
 
 #%% [markdown]
-#### Stage 6.3 - Visualise The Results Of Filling In Missing Data
+#### Stage 5.3 - Visualise The Results Of Filling In Missing Data
 # Generate some visualisations to show how the interpolation has worked.
 
 #%%
@@ -92,7 +99,7 @@ plot_interpolation_results([pivoted_worldbank_data, interpolated_data_set], ['Af
 plot_interpolation_results([pivoted_worldbank_data, interpolated_data_set], ['Dem. People\'s Rep. Korea', 'Australia', 'Iraq'], "Electric power consumption (kWh per capita)", share_x=True)
 
 #%% [markdown]
-#### Stage 6.4 - Check Countries
+#### Stage 6.3 - Check Countries
 # Now check if there are any countries in the data set that need to be removed.
 #%%
 mean_by_country = interpolated_data_set.groupby(level=["Region", "Country"]).mean()
@@ -104,14 +111,8 @@ analysis_of_2018.style
 
 #%% [markdown]
 #### Stage 6.5 - Fill In Other Dimension Based On Mean?
-# Fill in by Region by Year based on mean?
-# Approach grabbed from stack overflow:
-# (https://stackoverflow.com/questions/19966018/pandas-filling-missing-values-by-mean-in-each-group)[https://stackoverflow.com/questions/19966018/pandas-filling-missing-values-by-mean-in-each-group]
-#
-# Unfortunately I ran out of time to implement this.  Generic equation dropped in below.
-
-#%%
-#df['value'] = df.groupby(['category', 'name'])['value'].transform(lambda x: x.fillna(x.mean()))
+# Potential to fill in further gaps using Regional averages by Year?
+# This could be used to get even further coverage in data points.  But risk also that too much interpolation starts to skew the analysis, so decided to leave this out for now.
 
 #%% [markdown]
 #### Stage 6.6 - Write To File

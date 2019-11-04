@@ -5,7 +5,7 @@
 #
 #File Created first created 9th October 2019 by Barry Smart.
 # 
-## Stage 7 - Analysis Of Core Data Series
+## Stage 6 - Analysis Of Core Data Series
 #The purpose of this notebook is to do analysis of the core data items that are of interest:
 #- Life expectancy;
 #- Economic prosperity;
@@ -28,7 +28,7 @@ region_palette = {"North America" : "red", "Europe & Central Asia" : "blue",\
 
 
 #%% [markdown]
-### Stage 7.1 - Read The File
+### Stage 6.1 - Read The File
 # Read in the file that was generated from the previous script.
 
 #%%
@@ -36,8 +36,9 @@ github_path = "C:/Users/Barry/"
 #github_path = "C:/Users/cgb19156/"
 data_path = github_path + "GitHub/CS982/assignment1/"
 interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
+
 #%% [markdown]
-### Stage 7.2 - Prepare Source Data for Analysis
+### Stage 6.2 - Prepare Source Data for Analysis
 # A few simple steps to prepare the data set for visualisation:
 # - Add column : Log10 of GDP - This step was added retrospectively, because inspection of the data shows that we will be required to work with "Log GDP" in order to generate more meaningful analysis.
 # - Flatten the data by resetting the index so that the index columns are available for plotting.
@@ -59,7 +60,7 @@ mean_by_country_and_decade.index.name = 'ID'
 mean_by_country_and_decade[["Country", "Life expectancy at birth, total (years)"]].sort_values(by=["Country"])
 
 #%% [markdown]
-### Stage 7.3 - Create "Slice" Of Data For 2018
+### Stage 6.3 - Create "Slice" Of Data For 2018
 # In this section I will analyse data for 2018 in more depth with the purpose of generating some simple initial insights into the data.
 #
 #%%
@@ -71,7 +72,7 @@ analysis_of_2018_flattened.index.name = 'ID'
 analysis_of_2018_flattened.shape
 
 #%% [markdown]
-### Stage 7.4 - Analysis of Life Expectancy
+### Stage 6.4 - Analysis of Life Expectancy
 #Using a number of techniques to get a feel for the life expectany data:
 # - Looking at top 10 and bottom 10 countries in 2018;
 # - Distribution of data by region in 2018;
@@ -184,7 +185,7 @@ sns.swarmplot(x="Decade", y="Life expectancy at birth, total (years)", hue="Regi
 # - The net result is that the gap between those countries with the worst and best record for life expectancy has not closed appreciably since 1960.
 #
 #%% [markdown]
-### Stage 7.5 - Analysing Gross Domestic Product (GDP)
+### Stage 6.5 - Analysing Gross Domestic Product (GDP)
 #Using a number of techniques to get a feel for the life expectany data:
 # - Looking at top 10 and bottom 10 countries in 2018;
 # - Distribution of data by region in 2018;
@@ -252,7 +253,7 @@ sns.swarmplot(x="Decade", y="GDP per capita (current US$)", hue="Region",\
 # - This starts to open up serious questions about the distribution of wealth globally;
 # - It also begins to indicate the likelihood of close correlation between GDP and Life Expectancy?
 #
-### Stage 7.6 - Analysing Population Trends
+### Stage 6.6 - Analysing Population Trends
 #Using a number of techniques to get a feel for the life expectany data:
 # - Looking at top 10 and bottom 10 countries in 2018;
 # - Distribution of data by region in 2018;
@@ -281,7 +282,6 @@ analysis_of_2018_flattened.loc[:,["Country", "Region", "Population growth (annua
 #%%#%%
 region_box_plot(analysis_of_2018_flattened, "Population growth (annual %)", "Distribution of Population Growth\n by Region In 2018", x_scale="linear")
 
-
 #%%
 analysis_of_2018_flattened.loc[:,["Country", "Region", "Population growth (annual %)"]]\
     .nsmallest(10, "Population growth (annual %)")
@@ -300,7 +300,6 @@ plt.title("Population of Puerto Rico Since 1960", fontdict = {"fontsize" : 20})
 sns.lineplot(x="Year", y="Population, total",\
      color="gray", data=puertorico_data, ax=ax)
 
-
 #%%
 region_line_plot(mean_by_region_and_year, "Population, total", "Average Country Population by Region\nby Year Since 1960", y_scale="log")
 
@@ -311,6 +310,3 @@ plt.title("Population Growth by Country\nby Decade Since 1960", fontdict = {"fon
 sns.swarmplot(x="Decade", y="Population growth (annual %)", hue="Region",\
     palette=region_palette, data=mean_by_country_and_decade)
 
-
-
-#%%
