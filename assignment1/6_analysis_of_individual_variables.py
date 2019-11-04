@@ -32,8 +32,8 @@ region_palette = {"North America" : "red", "Europe & Central Asia" : "blue",\
 # Read in the file that was generated from the previous script.
 
 #%%
-github_path = "C:/Users/Barry/"
-#github_path = "C:/Users/cgb19156/"
+#github_path = "C:/Users/Barry/"
+github_path = "C:/Users/cgb19156/"
 data_path = github_path + "GitHub/CS982/assignment1/"
 interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 
@@ -194,12 +194,13 @@ sns.swarmplot(x="Decade", y="Life expectancy at birth, total (years)", hue="Regi
 #### GDP 2018 - Top 10 Countries
 #%%
 analysis_of_2018_flattened.loc[:,["Country", "Region", "GDP per capita (current US$)"]]\
-    .nlargest(10, "GDP per capita (current US$)")
+    .nlargest(80, "GDP per capita (current US$)")
 #%% [markdown]
 #### GDP 2018 - Bottom 10 Countries
 #%%
 analysis_of_2018_flattened.loc[:,["Country", "Region", "GDP per capita (current US$)"]]\
-    .nsmallest(10, "GDP per capita (current US$)")
+    .nsmallest(50, "GDP per capita (current US$)")
+
 
 #%% [markdown]
 #### Summary - GDP "League Tables" 2018

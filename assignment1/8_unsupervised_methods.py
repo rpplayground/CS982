@@ -325,11 +325,11 @@ plot_clusters(analysis_of_decade_nulls_removed, "Plot Showing Differences Betwee
 #%%
 linkage_model = linkage(X, 'ward')
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
-f, ax = plt.subplots(figsize=(25, 10))
-plt.title('Hierarchical Clustering Dendrogram')
-plt.xlabel('sample index')
-plt.ylabel('distance')
-dendrogram(linkage_model, leaf_rotation=90., leaf_font_size=8.,)
+f, ax = plt.subplots(figsize=(25, 15))
+plt.title('Hierarchical Clustering Dendrogram - Applied To Average of\nWorld Development Indicators in the 1990s for each Country ')
+plt.xlabel('Countries')
+plt.ylabel('Distance')
+dendrogram(linkage_model, leaf_rotation=90., leaf_font_size=9.,)
 locs, labels = plt.xticks()
 plt.show()
 
@@ -337,12 +337,13 @@ plt.show()
 labels[0]
 
 #%%
+linkage_model
+
+#%%
 X
 
-
-
 #%% [markdown]
-### Principle Components Analysis
+### Stage 8.9 - Principle Components Analysis
 # Principle component analysis (PCA) is fundamentally a dimensionality reduction algorthim.
 # Useful for visualisation, noise filtering, feature extraction and engineering.
 # According to Vanderplas 2017 it is a fast and flexible method for dimensionality reduction in data.
