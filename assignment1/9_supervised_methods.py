@@ -29,8 +29,8 @@ import seaborn as sns
 # Read in the file that was generated from the warngling and cleaning scripts.
 
 #%%
-#github_path = "C:/Users/Barry/"
-github_path = "C:/Users/cgb19156/"
+github_path = "C:/Users/Barry/"
+#github_path = "C:/Users/cgb19156/"
 data_path = github_path + "GitHub/CS982/assignment1/"
 interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 #%% [markdown]
@@ -87,8 +87,8 @@ def get_target_and_features(data_frame, target_column, feature_column_list):
     data_frame = data_frame.reset_index()
     data_frame = data_frame[all_columns]
     data_frame = data_frame.dropna()
-    target_dataframe = data_frame[target_column]
-    features_dataframe = data_frame[feature_column_list]
+    target_dataframe = data_frame[target_column].reset_index(drop=True)
+    features_dataframe = data_frame[feature_column_list].reset_index(drop=True)
     return target_dataframe, features_dataframe
 
 #%%
@@ -123,27 +123,60 @@ print(metrics.mean_squared_error(Y_test, linear_regression_prediction))
 #%%
 # Now apply the trained model to future years to see how it performs:
 list_of_results = []
+detailed_results = pd.DataFrame()
 for year in range(1990, 2019):
     single_year_data_frame = grab_year(interpolated_data_set, year)
     target_dataframe, features_dataframe = get_target_and_features(single_year_data_frame, linear_regression_target_column, linear_regression_feature_columns)
     #print(features_dataframe.shape)
     predict = linear_regression_model.predict(features_dataframe)
     mean_squared_error = metrics.mean_squared_error(target_dataframe, predict)
-    result = { "Year" : year, "Mean Squared Error" : mean_squared_error}
+    result = { "Year" : year, "Mean Squared Error" : mean_squared_error, "Average Value" : target_dataframe.mean(), "Average Prediction" : predict.mean()}
+    detailed_result_element = pd.DataFrame(predict)
+    detailed_result_element.rename(columns={0 : "Prediction"}, inplace=True)
+    detailed_result_element["Year"] = year
+    detailed_result_element["Target"] = target_dataframe
     list_of_results = list_of_results + [result]
+    detailed_results = detailed_results.append(detailed_result_element)
 results_dataframe = pd.DataFrame(list_of_results)
 results_dataframe
 
+#%%
+detailed_results
+
+#%%
+sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-', })
+plt.rcParams.update({'axes.titlesize' : 16, 'lines.linewidth' : 3,\
+    'axes.labelsize' : 14, 'xtick.labelsize' : 14, 'ytick.labelsize' : 14})
+f, ax = plt.subplots(figsize=(10, 3))
+plt.title("Mean Squared Error When Applied to Years 1990 to 2018 ", fontdict = {"fontsize" : 18})
+sns.lineplot(x="Year", y="Mean Squared Error",\
+    linewidth=3,\
+    data=results_dataframe, ax=ax)
+
+
+#%%
+# Melt data into the desired format:
+reshaped_detailed_results = pd.melt(detailed_results, id_vars=['Year'])
+reshaped_detailed_results.rename(columns={"variable" : "Element", "value" : "Value"}, inplace=True)
+reshaped_detailed_results
+
+hue_palette = {"Target" : "black", "Prediction" : "green"}
 
 #%%
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-', })
 plt.rcParams.update({'axes.titlesize' : 18, 'lines.linewidth' : 3,\
     'axes.labelsize' : 16, 'xtick.labelsize' : 16, 'ytick.labelsize' : 16})
 f, ax = plt.subplots(figsize=(10, 10))
-plt.title("Performance of Predictive Model for Life Expectancy\nTrained Using Data From 1990\nMean Squared Error When Applied to Years 1991 to 2018 ", fontdict = {"fontsize" : 20})
-sns.lineplot(x="Year", y="Mean Squared Error",\
+plt.title("Performance of Predictive Model for Life Expectancy\nTrained Using Data From 1990\nAverage Prediction Versus Actual from Years 1990 to 2018 ", fontdict = {"fontsize" : 20})
+sns.lineplot(x="Year", y="Value",\
     linewidth=3,\
-    data=results_dataframe, ax=ax)
+    style="Element",\
+    hue="Element",\
+    palette=hue_palette,\
+    markers=True, dashes=False,\
+    data=reshaped_detailed_results, ax=ax)
+plt.setp(ax.get_legend().get_texts(), fontsize='16') # for legend text
+plt.setp(ax.get_legend().get_title(), fontsize='18') # for legend title
 
 
 ### Stage 6.3 - Naive Bayes
@@ -166,7 +199,6 @@ single_year_data_frame = grab_year(interpolated_data_set, 2000)
 
 # Extract the target and feature dataframes from the source data using the helper function:
 nb_target_dataframe, nb_features_dataframe = get_target_and_features(single_year_data_frame_1990, nb_target_column, nb_feature_columns)
-
 nb_target_dataframe
 
 #%%
