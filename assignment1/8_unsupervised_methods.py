@@ -36,7 +36,7 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 
 #%%
 #github_path = "C:/Users/Barry/"
-github_path = "C:/Users/cgb19156/"
+github_path = "C:/Users/cgb19156.DS/"
 data_path = github_path + "GitHub/CS982/assignment1/"
 interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 #%% [markdown]
@@ -326,7 +326,7 @@ plot_clusters(analysis_of_decade_nulls_removed, "Plot Showing Differences Betwee
 linkage_model = linkage(X, 'ward')
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
 f, ax = plt.subplots(figsize=(25, 15))
-plt.title('Hierarchical Clustering Dendrogram - Applied To Average of\nWorld Development Indicators in the 1990s for each Country ')
+plt.title('Hierarchical Clustering Dendrogram - Applied To A Range of World Development Indicators in the 1990s')
 plt.xlabel('Countries')
 plt.ylabel('Distance')
 dendrogram(linkage_model, leaf_rotation=90., leaf_font_size=9.,)
