@@ -232,10 +232,10 @@ pivoted_worldbank_data.shape
 #%%
 pivoted_worldbank_data.describe()
 #%%
-pivoted_worldbank_data.head(60)
+pivoted_worldbank_data.head(10)
 
 #%%
-pivoted_worldbank_data.tail(60)
+pivoted_worldbank_data.reset_index()["Country"].value_counts()
 
 #%%
 pivoted_worldbank_data.dtypes
