@@ -32,18 +32,15 @@
 #
 
 #%%
-import sys
-sys.path
-
-#%%
 import numpy as np
 import pandas as pd
-import assignment1.data_wrangling_functions as dwf
+import os
+import assignment1.helper_functions as hf
 
 #%%
-github_path = "C:/Users/Barry/"
-#github_path = "C:/Users/cgb19156/"
-data_path = github_path + "GitHub/CS982/assignment1/"
+#%%
+# Read the raw World Bank data from the CSV file
+data_path = str(os.getcwd()) + "\\assignment1\\"
 raw_worldbank_data = pd.read_csv(data_path + "world_bank_data.csv")
 
 #%%
@@ -114,15 +111,13 @@ list_of_series_names = [\
     #"Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (per 100,000 population)",\
     #"Mortality caused by road traffic injury (per 100,000 people)",\
     #"Mortality rate attributed to household and ambient air pollution, age-standardized (per 100,000 population)",\
-    "Urban population growth (annual %)",\
     "Suicide mortality rate (per 100,000 population)",\
     # 
     # Access to education, healthcare and technology
     "Immunization, DPT (% of children ages 12-23 months)",\
     "Mobile cellular subscriptions (per 100 people)",\
     "Account ownership at a financial institution or with a mobile-money-service provider, young adults (% of population ages 15-24)",\
-    "Mortality rate, infant (per 1,000 live births)",\
-    "Urban population growth (annual %)"]
+    "Mortality rate, infant (per 1,000 live births)"]
 
 #%%
 # Now use this list of Series Name to appply this filter to the data:
@@ -145,7 +140,7 @@ cleansed_world_data = filtered_worldbank_data.replace(to_replace='..', value=np.
 # - Pivot the data such that the individual series data are each placed into their own columns to achieve a "fatter and less tall" data stucture.
 # 
 #%%
-reshaped_worldbank_data, column_list = dwf.trim_year_column_names(cleansed_world_data)
+reshaped_worldbank_data, column_list = hf.trim_year_column_names(cleansed_world_data)
 #%%
 reshaped_worldbank_data.shape
 #%%

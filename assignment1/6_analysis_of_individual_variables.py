@@ -33,8 +33,7 @@ region_palette = {"North America" : "red", "Europe & Central Asia" : "blue",\
 
 #%%
 #github_path = "C:/Users/Barry/"
-github_path = "C:/Users/cgb19156/"
-data_path = github_path + "GitHub/CS982/assignment1/"
+data_path = str(os.getcwd()) + "\\assignment1\\"
 interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 
 #%% [markdown]

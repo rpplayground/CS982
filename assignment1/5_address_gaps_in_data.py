@@ -12,6 +12,7 @@
 #
 
 #%%
+import os
 import numpy as np
 import pandas as pd
 import matplotlib as plt
@@ -24,9 +25,9 @@ import scipy
 # Read in the file that was generated from the previous script.
 
 #%%
-github_path = "C:/Users/Barry/"
-#github_path = "C:/Users/cgb19156/"
-data_path = github_path + "GitHub/CS982/assignment1/"
+#%%
+# Read the raw World Bank data from the CSV file
+data_path = str(os.getcwd()) + "\\assignment1\\"
 pivoted_worldbank_data = pd.read_pickle(data_path + "pivoted_worldbank_data.pkl")
 
 #%%

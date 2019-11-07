@@ -35,9 +35,7 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 # Read in the file that was generated from the warngling and cleaning scripts.
 
 #%%
-#github_path = "C:/Users/Barry/"
-github_path = "C:/Users/cgb19156.DS/"
-data_path = github_path + "GitHub/CS982/assignment1/"
+data_path = str(os.getcwd()) + "\\assignment1\\"
 interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 #%% [markdown]
 # This step was added retrospectively, because inspection of the data shows that we will be required to work with "Log GDP" in order to generate more meaningful analysis.

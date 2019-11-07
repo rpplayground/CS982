@@ -12,8 +12,7 @@
 # I am going to make use of the common numpy and pandas libraries to load, wrangle and perform basic analysis of the data
 import numpy as np
 import pandas as pd
-import assignment1.data_wrangling_functions as dwf
-
+import os
 
 #%% [markdown]
 #### Stage 3.1 - Import The Data
@@ -21,9 +20,7 @@ import assignment1.data_wrangling_functions as dwf
 
 #%%
 # Read the raw World Bank data from the CSV file
-github_path = "C:/Users/Barry/"
-#github_path = "C:/Users/cgb19156/"
-data_path = github_path + "GitHub/CS982/assignment1/"
+data_path = str(os.getcwd()) + "\\assignment1\\"
 raw_worldbank_data = pd.read_csv(data_path + "world_bank_data.csv")
 # Have a look at the first 10 rows
 raw_worldbank_data.head(10)
@@ -32,8 +29,9 @@ raw_worldbank_data.head(10)
 # The data is structured with repeating rows of data, where each row is governed by:
 # - The "Series Name" (a "Series Code" is also provided) - an example being "Population, total"
 # - The "Country Name" - (a "Country Code" is also provided) - an example being "Argentina"
-# There are then columns for each of the years from 1960 to 2018.
-
+#
+#  There are then columns for each of the years from 1960 to 2018.
+#
 #### Stage 3.2 - Closer Look At Shape and Structure : Series Name
 # Next step is to take closer look at the shape and structure of the data.
 # First run some basic statistics about number of rows and columns.
@@ -60,7 +58,7 @@ raw_worldbank_data.tail(10)
 #  On this basis, I have added a backlog [item](https://trello.com/c/bPYXSpNU) to filter to the following "Series":
 # - Population, total
 # - GDP (current US$)
-# - GNI, Atlas method (current US$)
+# - GNI Atlas method (current US$)
 # - Electric power consumption (kWh per capita)
 # - Energy use (kg of oil equivalent per capita)
 # - Personal remittances, paid (current US$)
