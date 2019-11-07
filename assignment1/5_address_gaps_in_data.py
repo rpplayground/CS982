@@ -53,7 +53,14 @@ pivoted_worldbank_data.reset_index()["Country"].value_counts()
 interpolated_data_set = pivoted_worldbank_data.groupby(level="Country").apply(lambda group: group.interpolate(method='linear', limit_direction='forward', limit=60))
 
 #%%
-# The following formula indicates how many null values have been filled in
+# The following dataframe captures how many null values have been filled in using this interpolation technique
+interpolation_results = pd.DataFrame()
+interpolation_results["Original Data"] = pivoted_worldbank_data.isnull().sum(axis = 0)
+interpolation_results["Interpolated Data"] = interpolated_data_set.isnull().sum(axis = 0)
+interpolation_results["Difference"] = interpolation_results["Original Data"] - interpolation_results["Interpolated Data"]
+interpolation_results
+
+#%%
 pivoted_worldbank_data.isnull().sum(axis = 0) - interpolated_data_set.isnull().sum(axis = 0)
 
 
