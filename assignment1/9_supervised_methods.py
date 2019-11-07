@@ -14,6 +14,7 @@
 # 2. Y
 #
 #%%
+import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -22,10 +23,11 @@ from sklearn import metrics
 from sklearn.linear_model import LinearRegression
 from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
 import seaborn as sns
 
 #%% [markdown]
-### Stage 6.1 - Read in the Data and Prepare it for Analysis
+### Stage 9.1 - Read in the Data and Prepare it for Analysis
 # Read in the file that was generated from the warngling and cleaning scripts.
 
 #%%
@@ -36,10 +38,26 @@ interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 # Adding "Log GDP" in order to generate more meaningful analysis.
 interpolated_data_set["Log GDP per Capita"] = np.log10(interpolated_data_set["GDP per capita (current US$)"])
 
-### Stage 6.2 - Inear Regression
-# Linear regression models are popular because they can be fit very quickly and are very interpretable.
-# Here I will apply linear regression to build a predictive model for Life Expectancy based on the 4 variables that strong correlatons with it.
-#
+#%% [markdown]
+### Stage 9.2 - Grab Data For 1990 
+# I will train the model using data for 1990 only.  So grab that year data ussing the xs function.
+
+#%%
+# Helper function to extract cross section of data based on year - I've chosen here to grab data for a single year.
+def grab_year(data_frame, year):
+    single_year_data_frame = data_frame.xs(year, level="Year", drop_level=False)
+    return single_year_data_frame
+
+
+single_year_data_frame_1990 = grab_year(interpolated_data_set, 1990)
+single_year_data_frame_1990
+
+#%% [markdown]
+### Stage 6.2 - Create Training and Test Data Sets 
+# Now create the training and test data set, using the standard convention:
+# - X - is the matrix containing the set of N feature / variable vectors;
+# - Y - is the set of N target variables associated with X.
+# - each will be split into a test and training data set, so 4 data sets in total.
 
 #%%
 # Set target column:
@@ -69,15 +87,6 @@ linear_regression_feature_columns = [ \
     'Log GDP per Capita']
 
 #%%
-# Helper function to extract cross section of data based on year - I've chosen here to grab data for a single year.
-def grab_year(data_frame, year):
-    single_year_data_frame = data_frame.xs(year, level="Year", drop_level=False)
-    return single_year_data_frame
-
-single_year_data_frame_1990 = grab_year(interpolated_data_set, 1990)
-single_year_data_frame_1990
-
-#%%
 # Helper function to extract target and feature dataframes
 def get_target_and_features(data_frame, target_column, feature_column_list):
     # Build a list of all columns
@@ -101,11 +110,22 @@ linear_regression_target_dataframe
 linear_regression_features_dataframe
 
 #%%
+scaler = StandardScaler()
+scaler.fit_transform(linear_regression_features_dataframe, linear_regression_target_dataframe)
+
+#%%
 # Split the data ready for training and testing the model
 X_train, X_test, Y_train, Y_test = sklearn.model_selection.train_test_split(linear_regression_features_dataframe, linear_regression_target_dataframe, test_size=0.20)
 
+#%% [markdown]
+### Stage 6.3 - Train Linear Regression Model
+# Linear regression models are popular because they can be fit very quickly and are very interpretable.
+# Here I will apply linear regression to build a predictive model for Life Expectancy based on the 4 variables that strong correlatons with it.
+#
+
+
 # Train the model
-linear_regression_model = LinearRegression()
+linear_regression_model = LinearRegression(normalize=True)
 linear_regression_model.fit(X_train, Y_train)
 
 #%%
@@ -114,10 +134,22 @@ print("Intercept: ", linear_regression_model.intercept_)
 #%%
 pd.DataFrame(list(zip(linear_regression_features_dataframe.columns, linear_regression_model.coef_)), columns = ['Features', 'Coefficients'])
 
-#%%
+#%% [markdown]
+### Stage 6.4 - Test The Model
 # Now test the model and determine how well it performs:
+# 
+
+#%%
 linear_regression_prediction = linear_regression_model.predict(X_test)
 print(metrics.mean_squared_error(Y_test, linear_regression_prediction))
+
+#%%
+linear_regression_model.score(X_test, Y_test)
+
+#%% [markdown]
+### Stage 6.5 - Apply The Model to Future Years
+# Loop through future years, applying the model and comparing predicted Life Expectancy with actual, computing Mean Squared Error:
+# 
 
 #%%
 # Now apply the trained model to future years to see how it performs:
@@ -141,6 +173,11 @@ results_dataframe
 
 #%%
 detailed_results
+
+#%% [markdown]
+### Stage 6.6 - Visualise the Results
+# Visualise the results:
+# 
 
 #%%
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-', })
@@ -177,8 +214,8 @@ sns.lineplot(x="Year", y="Value",\
 plt.setp(ax.get_legend().get_texts(), fontsize='16') # for legend text
 plt.setp(ax.get_legend().get_title(), fontsize='18') # for legend title
 
-
-### Stage 6.3 - Naive Bayes
+#%% [markdown]
+### Stage 6.7 - Naive Bayes
 # 
 #%%
 # Set target column:
@@ -209,20 +246,20 @@ nb_target_dataframe_encoded
 nb_features_dataframe
 
 #%%
-X_train, X_test, Y_train, Y_test = sklearn.model_selection.train_test_split(nb_features_dataframe, nb_target_dataframe_encoded, test_size = 0.25)
+X_nb_train, X_nb_test, Y_nb_train, Y_nb_test = sklearn.model_selection.train_test_split(nb_features_dataframe, nb_target_dataframe_encoded, test_size = 0.25)
 
 #%%
 naive_bayes_model = GaussianNB()
 
 #%%
-naive_bayes_model.fit(X_train, Y_train)
+naive_bayes_model.fit(X_nb_train, Y_nb_train)
 
 #%%
-naive_bayes_prediction = naive_bayes_model.predict(X_test)
-print("Naive Bayes model accuracy score: ", metrics.accuracy_score(Y_test,naive_bayes_prediction))
+naive_bayes_prediction = naive_bayes_model.predict(X_nb_test)
+print("Naive Bayes model accuracy score: ", metrics.accuracy_score(Y_nb_test,naive_bayes_prediction))
 
 #%%
-print(metrics.classification_report(Y_test, naive_bayes_prediction))
+print(metrics.classification_report(Y_nb_test, naive_bayes_prediction))
 
 #%%
-print(metrics.confusion_matrix(Y_test,naive_bayes_prediction))
+print(metrics.confusion_matrix(Y_nb_test,naive_bayes_prediction))

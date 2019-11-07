@@ -16,12 +16,12 @@
 # 3. Principle Component Analysis - as a useful pre-emtpive stage before applying supervised methods - with a view to reducing the number of variables required.
 #
 #%%
+import os
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import scipy
-import assignment1.data_wrangling_functions as dwf
 from sklearn import datasets
 from sklearn import metrics
 from sklearn import cluster
@@ -59,14 +59,15 @@ analysis_of_decade = analysis_of_decade.groupby(level=["Region", "Income Group",
 # Reduce number of variables and dropping any NA values as they will cause the model to break!
 analysis_of_decade_nulls_removed = analysis_of_decade.\
     loc[:, ["Income Group",\
-         "Log GDP per Capita",\
-              "Life expectancy at birth, total (years)",\
-                   "Renewable energy consumption (% of total final energy consumption)",\
-                       'Inflation, consumer prices (annual %)',\
-                            'Merchandise exports (current US$)',\
-                                "Immunization, DPT (% of children ages 12-23 months)",\
-                                    "Urban population growth (annual %)",\
-                                        "Mortality rate, infant (per 1,000 live births)"]]\
+        "Country", \
+            "Log GDP per Capita",\
+                "Life expectancy at birth, total (years)",\
+                    "Renewable energy consumption (% of total final energy consumption)",\
+                        'Inflation, consumer prices (annual %)',\
+                                'Merchandise exports (current US$)',\
+                                    "Immunization, DPT (% of children ages 12-23 months)",\
+                                        "Urban population growth (annual %)",\
+                                            "Mortality rate, infant (per 1,000 live births)"]]\
         .dropna()
 
 analysis_of_decade_nulls_removed
@@ -76,8 +77,13 @@ ground_truth = analysis_of_decade_nulls_removed.iloc[:,0]
 ground_truth.value_counts()
 
 #%%
-dataset_variables = analysis_of_decade_nulls_removed.iloc[:, 1:]
+countries = analysis_of_decade_nulls_removed.iloc[:,1]
+
+
+#%%
+dataset_variables = analysis_of_decade_nulls_removed.iloc[:, 2:]
 dataset_variables.describe()
+
 
 #%% [markdown]
 ### Stage 8.3 - Establish The Variables (X)
@@ -287,7 +293,7 @@ diff_palette = {4: "darkred", 3: "red", 2: "orangered", 1: "orange", 0: "black",
 
 #%%
 # Helper function to enable data to be plotted consistently
-def plot_clusters(dataframe, title, x_column, y_column, hue_column, hue_palette):
+def plot_clusters(dataframe, title, x_column, y_column, size_column, hue_column, hue_palette):
     sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '--', 
         'axes.titlesize' : 18, 'lines.linewidth' : 1, 'axes.labelsize' : 18, 'xtick.labelsize' : 16,\
         'ytick.labelsize' : 16})
@@ -295,7 +301,8 @@ def plot_clusters(dataframe, title, x_column, y_column, hue_column, hue_palette)
     chart = sns.scatterplot(x = x_column, y = y_column,\
         hue = hue_column,\
         palette = hue_palette,\
-        sizes = 100,\
+        size = size_column, \
+        sizes = (50,200),\
         alpha = 0.8,\
         linewidth = 0,\
         data=dataframe, ax = ax)
@@ -303,16 +310,16 @@ def plot_clusters(dataframe, title, x_column, y_column, hue_column, hue_palette)
 
 #%%
 plot_clusters(analysis_of_decade_nulls_removed, "Plot of Log GDP Per Capita and Life Expectancy\n For Each Country - Average For 1990s:\nShowing \"Ground Truth\" (Income Group) Labels", "Log GDP per Capita",\
-    "Life expectancy at birth, total (years)", "Income Group", income_group_palette)
+    "Life expectancy at birth, total (years)", "Mortality rate, infant (per 1,000 live births)", "Income Group", income_group_palette)
 
 #%%
 plot_clusters(analysis_of_decade_nulls_removed, "Plot of Log GDP Per Capita and Life Expectancy\n For Each Country - Average For 1990s:\nShowing Labels Assigned by Agglomerative Clustering",\
-     "Log GDP per Capita", "Life expectancy at birth, total (years)",\
+     "Log GDP per Capita", "Life expectancy at birth, total (years)", "Mortality rate, infant (per 1,000 live births)",\
           "agglomeative_cluster", cluster_palette)
 
 #%%
-plot_clusters(analysis_of_decade_nulls_removed, "Plot Showing Differences Between \"Known Truth\"\nand Labels Assigned By Clustering Algorithm",\
-    "Log GDP per Capita", "Life expectancy at birth, total (years)",\
+plot_clusters(analysis_of_decade_nulls_removed, "Plot Showing Differences Between \"Ground Truth\"\nand Labels Assigned By Clustering Algorithm",\
+    "Log GDP per Capita", "Life expectancy at birth, total (years)", "Mortality rate, infant (per 1,000 live births)",\
         "label_diff", diff_palette)
 
 #%% [markdown]
@@ -324,18 +331,25 @@ plot_clusters(analysis_of_decade_nulls_removed, "Plot Showing Differences Betwee
 linkage_model = linkage(X, 'ward')
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
 f, ax = plt.subplots(figsize=(25, 15))
-plt.title('Hierarchical Clustering Dendrogram - Applied To A Range of World Development Indicators in the 1990s')
+plt.title('Hierarchical Clustering Dendrogram - Based on Country Level World Development Indicators (WDIs) Averaged Across the 1990s')
 plt.xlabel('Countries')
 plt.ylabel('Distance')
-dendrogram(linkage_model, leaf_rotation=90., leaf_font_size=9.,)
+dendrogram(linkage_model, leaf_rotation=270, leaf_font_size=9.,)
 locs, labels = plt.xticks()
+step = 10
+end = 5 + ((len(countries) + 1) * step)
+plt.xticks(np.arange(5, end, step), countries.to_numpy())
+
 plt.show()
 
 #%%
-labels[0]
+labels[1]
 
 #%%
 linkage_model
+
+#%%
+countries.to_numpy()
 
 #%%
 X
