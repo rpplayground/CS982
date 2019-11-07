@@ -12,12 +12,12 @@
 #- Population growth.
 #
 #%%
+import os
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import scipy
-import assignment1.data_wrangling_functions as dwf
 
 #%%
 region_ranking = ["North America", "Europe & Central Asia", "Middle East & North Africa",\
@@ -168,7 +168,7 @@ region_line_plot(mean_by_region_and_year, "Life expectancy at birth, total (year
 
 
 #%%
-f, ax = plt.subplots(figsize=(10, 10))
+f, ax = plt.subplots(figsize=(10, 9))
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
 plt.rcParams.update({'axes.titlesize' : 18, 'lines.linewidth' : 3,\
     'axes.labelsize' : 16, 'xtick.labelsize' : 16, 'ytick.labelsize' : 16})
@@ -225,6 +225,10 @@ region_box_plot(analysis_of_2018_flattened, "GDP per capita (current US$)", "Dis
 region_box_plot(analysis_of_2018_flattened, "GDP per capita (current US$)", "Distribution of Log10 of GDP\nby Region in 2018", x_scale="log")
 
 #%% [markdown]
+# Figure 5 above illustrates the stark reality that the gap between the poorest and richest countries in the world is many orders of magnitude in scale.  There are some significant outliers of note:
+# There is a significant range of values across some regions – for example, countries in Europe & Central Asia span from Tajikistan ($827 per capita) to Monaco ($166,726 per capita);
+# Whilst Sub-Saharan Africa is overall the poorest region, there are some richer countries that appear as outliers, such as the Seychelles ($16,433 per capita).
+#
 # It will be useful to create a new series of data in the dataframe that is the Log10 of GDP.
 # We should go back earlier in the process to add a calculated column which is "log to base 10 of GDP"
 # TODO - add a backlog item.
@@ -305,8 +309,13 @@ region_line_plot(mean_by_region_and_year, "Population, total", "Average Country 
 
 #%%
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
-f, ax = plt.subplots(figsize=(10, 10))
-plt.title("Population Growth by Country\nby Decade Since 1960", fontdict = {"fontsize" : 20})
-sns.swarmplot(x="Decade", y="Population growth (annual %)", hue="Region",\
-    palette=region_palette, data=mean_by_country_and_decade)
+plt.rcParams.update({'axes.titlesize' : 18, 'lines.linewidth' : 1.5,\
+    'axes.labelsize' : 16, 'xtick.labelsize' : 16, 'ytick.labelsize' : 16})
+f, ax = plt.subplots(figsize=(10, 6))
+plt.title("Population Growth by Region In 2018", fontdict = {"fontsize" : 20})
+sns.violinplot(x="Year", y="Population growth (annual %)", hue="Region",\
+    palette=region_palette, data=interpolated_data_set_flattened.loc[interpolated_data_set_flattened["Year"] == 2018])
 
+
+
+# %%

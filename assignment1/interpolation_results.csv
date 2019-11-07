@@ -1,0 +1,21 @@
+Series Name,Data Points in Original Data,NaNs in Original Data,Data Points in Interpolated Data,NaNs in Interpolated Data,Number of NaNs Interpolated
+Account at financial institution (% of population ages 15-24),427,12299,1207,11519,780
+Electric power consumption (kWh per capita),5907,6819,6477,6249,570
+Energy use (kg of oil equivalent per capita),6082,6644,7320,5406,1238
+Fossil fuel energy consumption (% of total),5860,6866,7274,5452,1414
+GDP per capita (current US$),9675,3051,9879,2847,204
+"Immunization, DPT (% of children ages 12-23 months)",6871,5855,6871,5855,0
+"Inflation, consumer prices (annual %)",7671,5055,7842,4884,171
+"Life expectancy at birth, total (years)",11329,1397,11747,979,418
+Market capitalization of listed domestic companies (current US$),2199,10527,2623,10103,424
+Merchandise exports (current US$),10380,2346,10416,2310,36
+Mobile cellular subscriptions (per 100 people),9418,3308,12098,628,2680
+"Mortality rate, infant (per 1,000 live births)",10097,2629,10097,2629,0
+Population density (people per sq. km of land area),12162,564,12177,549,15
+Population growth (annual %),12690,36,12702,24,12
+"Population, total",12695,31,12705,21,10
+Power outages in firms in a typical month (number),259,12467,1447,11279,1188
+Renewable energy consumption (% of total final energy consumption),5392,7334,6031,6695,639
+"Suicide mortality rate (per 100,000 population)",915,11811,3477,9249,2562
+Tax revenue (% of GDP),3843,8883,4530,8196,687
+Urban population growth (annual %),12573,153,12584,142,11

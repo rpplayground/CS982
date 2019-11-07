@@ -56,14 +56,23 @@ interpolated_data_set = pivoted_worldbank_data.groupby(level="Country").apply(la
 #%%
 # The following dataframe captures how many null values have been filled in using this interpolation technique
 interpolation_results = pd.DataFrame()
-interpolation_results["Original Data"] = pivoted_worldbank_data.isnull().sum(axis = 0)
-interpolation_results["Interpolated Data"] = interpolated_data_set.isnull().sum(axis = 0)
-interpolation_results["Difference"] = interpolation_results["Original Data"] - interpolation_results["Interpolated Data"]
+interpolation_results["Data Points in Original Data"] = pivoted_worldbank_data.count(axis = 0)
+interpolation_results["NaNs in Original Data"] = pivoted_worldbank_data.isnull().sum(axis = 0)
+interpolation_results["Data Points in Interpolated Data"] = interpolated_data_set.count(axis = 0)
+interpolation_results["NaNs in Interpolated Data"] = interpolated_data_set.isnull().sum(axis = 0)
+interpolation_results["Number of NaNs Interpolated"] = interpolation_results["NaNs in Original Data"] - interpolation_results["NaNs in Interpolated Data"]
 interpolation_results
 
 #%%
-pivoted_worldbank_data.isnull().sum(axis = 0) - interpolated_data_set.isnull().sum(axis = 0)
+# Save data frame to CSV so that it can be imported into document.
+interpolation_results.to_csv("./assignment1/interpolation_results.csv")
 
+#%%
+summary = interpolation_results.sum(axis=0)
+summary
+
+#%%
+# Percentage of 
 
 #%% [markdown]
 #### Stage 5.3 - Visualise The Results Of Filling In Missing Data
@@ -107,23 +116,12 @@ plot_interpolation_results([pivoted_worldbank_data, interpolated_data_set], ['Af
 plot_interpolation_results([pivoted_worldbank_data, interpolated_data_set], ['Dem. People\'s Rep. Korea', 'Australia', 'Iraq'], "Electric power consumption (kWh per capita)", share_x=True)
 
 #%% [markdown]
-#### Stage 6.3 - Check Countries
-# Now check if there are any countries in the data set that need to be removed.
-#%%
-mean_by_country = interpolated_data_set.groupby(level=["Region", "Country"]).mean()
-list_of_regions = set(mean_by_country.index.get_level_values("Region"))
-
-#%%
-analysis_of_2018 = interpolated_data_set.xs(2018, level="Year", drop_level=False).reset_index(level=["Income Group", "Decade", "Year"])
-analysis_of_2018.style
-
-#%% [markdown]
-#### Stage 6.5 - Fill In Other Dimension Based On Mean?
+#### Stage 6.4 - Fill In Other Dimension Based On Mean?
 # Potential to fill in further gaps using Regional averages by Year?
 # This could be used to get even further coverage in data points.  But risk also that too much interpolation starts to skew the analysis, so decided to leave this out for now.
 
 #%% [markdown]
-#### Stage 6.6 - Write To File
+#### Stage 6.5 - Write To File
 # Now we write the resulting data frame to the Pickle file format to preserve all meta data.
 
 #%%
