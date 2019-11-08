@@ -260,7 +260,7 @@ metrics.homogeneity_score(Y, model.labels_)
 
 #%%
 # Splice the labels assigned by the Agglomerative cluster back onto the original data set:
-analysis_of_decade_nulls_removed["agglomeative_cluster"] = model.labels_
+analysis_of_decade_nulls_removed["Agglomerative Clustering Labels"] = model.labels_
 
 #%%
 # To enable evaluation of model, assign integer labels to each row so that they align in general with the labels assigned by the clustering algorith.
@@ -275,13 +275,13 @@ def label_income_group (row):
         return 1
     return 4
 
-analysis_of_decade_nulls_removed['income_group_label'] = \
+analysis_of_decade_nulls_removed["Ground Truth Encoded"] = \
     analysis_of_decade_nulls_removed.apply (lambda row: label_income_group(row), axis=1)
 
 #%%
 # Now compute the difference between "known truth" (Income Group) and labels assigned by model
-analysis_of_decade_nulls_removed['label_diff'] = analysis_of_decade_nulls_removed['income_group_label']\
-     - analysis_of_decade_nulls_removed['agglomeative_cluster']
+analysis_of_decade_nulls_removed['Difference Between Ground Truth and Clustering'] = analysis_of_decade_nulls_removed["Ground Truth Encoded"]\
+     - analysis_of_decade_nulls_removed["Agglomerative Clustering Labels"]
 
 #%%
 # Set up palette for plot to enable like with like comparison
@@ -315,12 +315,12 @@ plot_clusters(analysis_of_decade_nulls_removed, "Plot of Log GDP Per Capita and 
 #%%
 plot_clusters(analysis_of_decade_nulls_removed, "Plot of Log GDP Per Capita and Life Expectancy\n For Each Country - Average For 1990s:\nShowing Labels Assigned by Agglomerative Clustering",\
      "Log GDP per Capita", "Life expectancy at birth, total (years)", "Mortality rate, infant (per 1,000 live births)",\
-          "agglomeative_cluster", cluster_palette)
+          "Agglomerative Clustering Labels", cluster_palette)
 
 #%%
 plot_clusters(analysis_of_decade_nulls_removed, "Plot Showing Differences Between \"Ground Truth\"\nand Labels Assigned By Clustering Algorithm",\
     "Log GDP per Capita", "Life expectancy at birth, total (years)", "Mortality rate, infant (per 1,000 live births)",\
-        "label_diff", diff_palette)
+        "Difference Between Ground Truth and Clustering", diff_palette)
 
 #%% [markdown]
 ### Stage 8.8 Generate a Dendrogram
