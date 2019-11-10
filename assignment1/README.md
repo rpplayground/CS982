@@ -19,7 +19,7 @@ To complete the assignment I followed the series of steps illustrated in the bel
 ## Data Flow
 The data flowed through the project in accordance with the following diagram:
 
-![Illustration of Data Flow](assignment1\images\DataFlow.png)
+![Illustration of Data Flow](https://github.com/Vesperpiano/CS982/blob/master/assignment1/images/DataFlow.png)
  
 ## Sourcing the Data
 A suitable open data was sourced from the World Bank (World Bank, 2019): https://databank.worldbank.org/ 
