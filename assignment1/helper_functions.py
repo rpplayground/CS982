@@ -35,9 +35,6 @@ def find_min_and_max (data_frame, column_name):
     return min_power, min_value, max_power, max_value
 
 def add_annotation(ax, row, x_column, y_column, label_column, offset_x, offset_y):
-    print("Adding annotation:")
-    print(row)
-    print(x_column, y_column, offset_x, offset_y)
     offset = 100
     ax.annotate(\
         s = row[label_column],\
@@ -73,7 +70,6 @@ def label_max_and_mins(data_frame, x_column, y_column, size_column, label_column
     list_of_columns = [x_column, y_column, size_column]
     for column in list_of_columns:
         max_x = trimmed_data_frame.loc[trimmed_data_frame[column].idxmax()]
-        print(max_x)
         add_annotation(ax, max_x, x_column, y_column, label_column, -1, -1)
         min_x = trimmed_data_frame.loc[trimmed_data_frame[column].idxmin()]
         add_annotation(ax, min_x, x_column, y_column, label_column, 1, 1)

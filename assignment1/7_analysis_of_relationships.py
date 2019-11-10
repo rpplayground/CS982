@@ -1,24 +1,25 @@
 #%% [markdown]
-#University of Strathclyde - MSc Artificial Intelligence and Applications
+## University of Strathclyde - MSc Artificial Intelligence and Applications
 #
-#CS982 - Big Data Technologies
+## CS982 - Big Data Technologies
 #
-#File Created first created 9th October 2019 by Barry Smart.
+#File Created first created 13th October 2019 by Barry Smart.
 # 
-## Stage 7 - Analysis Of Core Data Series
+### Stage 7 - Analysis Of Relationships Between Variables
 #The purpose of this notebook is to do analysis of the core data items that are of interest:
 #- Life expectancy;
 #- Economic prosperity;
 #- Population growth.
 #
 #%%
+import os
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import scipy
 from pandas.plotting import scatter_matrix
-import assignment1.data_wrangling_functions as dwf
+import assignment1.helper_functions as hf
 
 #%%
 region_ranking = ["North America", "Europe & Central Asia", "Middle East & North Africa",\
@@ -43,7 +44,7 @@ interpolated_data_set = pd.read_pickle(data_path + "interpolated_data_set.pkl")
 interpolated_data_set["Log GDP per Capita"] = np.log10(interpolated_data_set["GDP per capita (current US$)"])
 interpolated_data_set_flattened = interpolated_data_set.reset_index()
 
-interpolated_data_set_short_column_titles, list_of_columns = dwf.assign_short_variable_names(interpolated_data_set, 18)
+interpolated_data_set_short_column_titles, list_of_columns = hf.assign_short_variable_names(interpolated_data_set, 18)
 interpolated_data_set_short_column_titles_flattened = interpolated_data_set_short_column_titles.reset_index()
 
 #%% [markdown]
@@ -153,11 +154,11 @@ def country_scatterplot(country_dataframe, title, x_column, y_column, hue_column
     plt.gca().add_artist(new_legend)
     # Check to see if points of interest have been specified
     if points_of_interest:
-        dwf.plot_points_of_interest(country_dataframe, points_of_interest,\
+        hf.plot_points_of_interest(country_dataframe, points_of_interest,\
                 x_column, y_column, size_column, "Country", ax)
     # Check if maximum and minimum values for x, y and size should be plotted
     if label_maxs_and_mins:
-        dwf.label_max_and_mins(country_dataframe, x_column, y_column, size_column, "Country", ax)
+        hf.label_max_and_mins(country_dataframe, x_column, y_column, size_column, "Country", ax)
 
     plt.show()
 
@@ -189,7 +190,7 @@ data_for_hans_rosling_scatter_2018
 
 #%%
 # Going to set the max and min for the X axis (GDP) based on the entire data set of 59 years to show how it has moved
-min_power, min_value, max_power, max_value = dwf.find_min_and_max(interpolated_data_set_flattened, "GDP per capita (current US$)")
+min_power, min_value, max_power, max_value = hf.find_min_and_max(interpolated_data_set_flattened, "GDP per capita (current US$)")
 
 country_scatterplot(data_for_hans_rosling_scatter_1960, "Hans Rosling Inspired Scatter Plot\nCountry Data Across 4 Dimensions In The Year 1960:\nGDP, Life Expectancy, Region and Population",\
     "GDP per capita (current US$)", "Life expectancy at birth, total (years)", "Region", "Population, total",\

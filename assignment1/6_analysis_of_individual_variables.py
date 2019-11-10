@@ -1,11 +1,11 @@
 #%% [markdown]
-#University of Strathclyde - MSc Artificial Intelligence and Applications
+## University of Strathclyde - MSc Artificial Intelligence and Applications
 #
-#CS982 - Big Data Technologies
+## CS982 - Big Data Technologies
 #
-#File Created first created 9th October 2019 by Barry Smart.
+#File Created first created 11th October 2019 by Barry Smart.
 # 
-## Stage 6 - Analysis Of Core Data Series
+### Stage 6 - Analysis Of Indivisual Variables
 #The purpose of this notebook is to do analysis of the core data items that are of interest:
 #- Life expectancy;
 #- Economic prosperity;
@@ -94,7 +94,45 @@ analysis_of_2018_flattened.loc[:,["Country", "Region", "Life expectancy at birth
 # - The gap between the bottom and top is over 30 years!;
 # - The bottom 10 countries are **ALL** in Sub-Saharan Africa.
 #
-#### Life Expectancy 2018 - Analysing Distribution of Data for All Countries
+#### Life Expectancy Over Time - Analysing Distribution of Data
+# First look at histograms for the data across a range of years in the data set
+
+#%%
+# This funtion places each sub plot onto the frame
+def create_sub_plot(figure, axes, x_position, y_position, data_series, year):
+    axes[x_position,y_position].hist(data_series)
+    max_value = pd.DataFrame.max(data_series)
+    min_value = pd.DataFrame.min(data_series)
+    range = max_value - min_value
+    title = "Distribution in {}\nmean:{:2.1f} std:{:2.1f}\nmin:{:2.1f} max:{:2.1f} range:{:2.1f}"\
+        .format(year, pd.DataFrame.mean(data_series), pd.DataFrame.std(data_series), min_value, max_value, range)
+    axes[x_position,y_position].set_title(title, fontdict = {"fontsize" : 14})
+
+# This function configures the frame and then iterates through the results to create slices of the data that can be plotted
+def plot_year_histograms(dataframe, x_column, share_x=True, share_y=True):
+    # Set up the number of sub plots based on the dimensions of experiments and points
+    figure_size_unit = 5 # This governs the size of each subplot on the figure 
+    list_of_years = [1960, 1970, 1980, 1990, 2000, 2010, 2018]
+    list_of_plot_positions = {1960 : (0,0), 1970 : (0,1), 1980 : (1,0), 1990 : (1,1), 2000 : (2,0), 2010 : (2,1), 2018 : (3,0)}
+    plot_columns = 2
+    plot_rows = 4
+    sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
+    figure, axes = plt.subplots(plot_rows, plot_columns, sharex=share_x, sharey=share_y,\
+        figsize=(figure_size_unit * plot_columns, figure_size_unit * plot_rows))
+    plt.rcParams.update({'axes.titlesize' : 14, 'lines.linewidth' : 1.5,\
+        'axes.labelsize' : 14, 'xtick.labelsize' : 12, 'ytick.labelsize' : 12})
+    for year_index, year in enumerate(list_of_years):
+            # Use the "cross section" method to grab the results for a specific experiment and points configuration
+            data_series = dataframe.xs(year, level="Year", drop_level=False)[x_column]
+            # Send the data off to get plotted
+            create_sub_plot(figure, axes, list_of_plot_positions[year][0], list_of_plot_positions[year][1] , data_series, year)
+    plt.subplots_adjust(hspace=.4)
+    figure.suptitle(x_column, fontsize="x-large")
+
+plot_year_histograms(interpolated_data_set, "Life expectancy at birth, total (years)")
+
+#%% [markdown]
+#### Boxplot For 2018
 #Now using box plots to look at distribution by country.
 
 #%%
@@ -130,12 +168,12 @@ analysis_of_2018_flattened.loc[:,["Country", "Region", "Life expectancy at birth
     .nsmallest(10, "Life expectancy at birth, total (years)")
 
 #%%
-# haiti_data = interpolated_data_set_flattened.loc[interpolated_data_set_flattened["Country"] == "Haiti"]
-# sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '--'})
-# f, ax = plt.subplots(figsize=(10, 10))
-# plt.title("Population of Haiti", fontdict = {"fontsize" : 20})
-# sns.lineplot(x="Year", y="Population, total",\
-#     color="gray", data=haiti_data, ax=ax)
+haiti_data = interpolated_data_set_flattened.loc[interpolated_data_set_flattened["Country"] == "Haiti"]
+sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '--'})
+f, ax = plt.subplots(figsize=(10, 10))
+plt.title("Population of Haiti", fontdict = {"fontsize" : 20})
+sns.lineplot(x="Year", y="Population, total",\
+    color="gray", data=haiti_data, ax=ax)
 
 
 #%% [mardown]
@@ -190,16 +228,18 @@ sns.swarmplot(x="Decade", y="Life expectancy at birth, total (years)", hue="Regi
 # - Distribution of data by region in 2018;
 # - Analysing how it has developed over time since 1960.
 #
-#### GDP 2018 - Top 10 Countries
+#%% [markdown]
+#### GDP 2018 - Bottom 10 Countries
+
 #%%
 analysis_of_2018_flattened.loc[:,["Country", "Region", "GDP per capita (current US$)"]]\
-    .nlargest(80, "GDP per capita (current US$)")
+    .nlargest(10, "GDP per capita (current US$)")
+
 #%% [markdown]
 #### GDP 2018 - Bottom 10 Countries
 #%%
 analysis_of_2018_flattened.loc[:,["Country", "Region", "GDP per capita (current US$)"]]\
-    .nsmallest(50, "GDP per capita (current US$)")
-
+    .nsmallest(10, "GDP per capita (current US$)")
 
 #%% [markdown]
 #### Summary - GDP "League Tables" 2018
@@ -207,10 +247,14 @@ analysis_of_2018_flattened.loc[:,["Country", "Region", "GDP per capita (current 
 # - The gap between the bottom and top is three orders of magnitude!;
 # - Building on the pattern seen with life expectancy, 9 of bottom 10 countries are in Sub-Saharan Africa.
 #
-#Later I should look at how this GDP gap has developed over time.
-#TODO add backlog item for this.
-# 
-#### GDP 2018 - Analysing Distribution of Data for All Countries
+#### GDP - Distribution of Data
+# Look at histograms for the data across a range of years in the data set
+
+#%%
+plot_year_histograms(interpolated_data_set, "GDP per capita (current US$)")
+
+#%% [markdown]
+#### GDP 2018 - Analysing Distribution of Data for All Regions
 #Now using box plots to look at distribution by country.
 
 #%%
@@ -283,17 +327,38 @@ analysis_of_2018_flattened.loc[:,["Country", "Region", "Population growth (annua
 #%% [markdown]
 #### Population Growth 2018 - Bottom 10 Countries
 
-#%%#%%
-region_box_plot(analysis_of_2018_flattened, "Population growth (annual %)", "Distribution of Population Growth\n by Region In 2018", x_scale="linear")
-
 #%%
 analysis_of_2018_flattened.loc[:,["Country", "Region", "Population growth (annual %)"]]\
     .nsmallest(10, "Population growth (annual %)")
 
+#%% [markdown]
+#### Population Growth - Distribution of Data
+# First look at histograms for the data across a range of years in the data set
+
+#%%
+plot_year_histograms(interpolated_data_set, "Population growth (annual %)")
+
+#%% [markdown]
+#### Population Growth - Distribution In 2018
+# Use a boxplot to take a look at population growth distribution by region in 2018
+
+#%%
+region_box_plot(analysis_of_2018_flattened, "Population growth (annual %)", "Distribution of Population Growth\n by Region In 2018", x_scale="linear")
+
+#%% [markdown]
+#### Listing of Countries With Negative Population Growth in 2018
+
 #%%
 analysis_of_2018_flattened.loc[analysis_of_2018_flattened["Population growth (annual %)"] < 0][["Region", "Country", "Population growth (annual %)"]]
 
-#%%
+#%% [markdown]
+#### Puerto Rico
+# Puerto Rico is the outlier in Latin America & Caribbean with a population growth of -3.9%.
+# The country is facing outmigration due to “the effects of a decade-long economic recession, Puerto Ricans – who are U.S. citizens at birth – have increasingly moved to the U.S. mainland”
+# (https://www.pewresearch.org/fact-tank/2016/03/24/historic-population-losses-continue-across-puerto-rico/)[https://www.pewresearch.org/fact-tank/2016/03/24/historic-population-losses-continue-across-puerto-rico/]
+#
+# The following chart illustrates this reality:
+#
 #%%
 puertorico_data = interpolated_data_set_flattened.loc[interpolated_data_set_flattened["Country"] == "Puerto Rico"]
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '--'})
@@ -307,6 +372,10 @@ sns.lineplot(x="Year", y="Population, total",\
 #%%
 region_line_plot(mean_by_region_and_year, "Population, total", "Average Country Population by Region\nby Year Since 1960", y_scale="log")
 
+#%% [markdown]
+#### Population Growth - Distribution In 2018
+# Alternative visualisation using a violin plot to take a look at population growth distribution by region in 2018
+
 #%%
 sns.set_style("ticks", {'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': '-'})
 plt.rcParams.update({'axes.titlesize' : 18, 'lines.linewidth' : 1.5,\
@@ -317,5 +386,3 @@ sns.violinplot(x="Year", y="Population growth (annual %)", hue="Region",\
     palette=region_palette, data=interpolated_data_set_flattened.loc[interpolated_data_set_flattened["Year"] == 2018])
 
 
-
-# %%

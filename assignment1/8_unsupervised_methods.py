@@ -1,12 +1,12 @@
 
 #%% [markdown]
-#University of Strathclyde - MSc Artificial Intelligence and Applications
+## University of Strathclyde - MSc Artificial Intelligence and Applications
 #
-#CS982 - Big Data Technologies
+## CS982 - Big Data Technologies
 #
 #File Created first created Xth October 2019 by Barry Smart.
 # 
-## Stage 8 - Application of Unsupervised Methods
+### Stage 8 - Application of Unsupervised Methods
 #The purpose of this notebook is to run a range of unsupervised models on the data.
 #The objective is to determine how successfully clustering models can be used to label given the *ground truth* of *Income GrouP*.
 #

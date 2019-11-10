@@ -1,17 +1,14 @@
 #%% [markdown]
-#University of Strathclyde - MSc Artificial Intelligence and Applications
+## University of Strathclyde - MSc Artificial Intelligence and Applications
 #
-#CS982 - Big Data Technologies
+## CS982 - Big Data Technologies
 #
-#File Created first created 9th October 2019 by Barry Smart.
+#File Created first created 16th October 2019 by Barry Smart.
 # 
 ## Stage 9 - Application of Supervised Methods
 #The purpose of this notebook is to run a range of supervised models on the data.
 #The objective is to determine how successfully clustering models can be used to label given the *ground truth* of *Income GrouP*.
 #
-# The following high level steps have been applied:
-# 1. X
-# 2. Y
 #
 #%%
 import os
@@ -125,7 +122,8 @@ X_train, X_test, Y_train, Y_test = sklearn.model_selection.train_test_split(line
 
 
 # Train the model
-linear_regression_model = LinearRegression(normalize=True)
+#linear_regression_model = LinearRegression(normalize=True)
+linear_regression_model = LinearRegression()
 linear_regression_model.fit(X_train, Y_train)
 
 #%%

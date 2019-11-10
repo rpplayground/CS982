@@ -2,7 +2,8 @@
 ## University of Strathclyde -  MSc Artificial Intelligence and Applications
 ## CS982 - Big Data Technologies
 ## Assignment 1 - Exploring Data
-# File Created first created 9th October 2019 by Barry Smart.
+#
+# File Created first created 10th October 2019 by Barry Smart.
 # 
 ### Stage 5 - Address Gaps In The Data
 # The purpose of this notebook is to address some of the gaps in the data.
